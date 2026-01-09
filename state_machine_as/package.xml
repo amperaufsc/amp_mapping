@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>state_machine_as</name>
+  <version>2.3.18</version>
+  <description>The state_machine_as package</description>
+  <maintainer email="smacc2@smacc2.cool">SMACC2 is cool</maintainer>
+  <license>Apache-2.0</license>
+  <license>MyLicense</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>libboost-thread-dev</depend>
+
+  <depend>ros_timer_client</depend>
+  <depend>smacc2</depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>lifecycle_msgs</depend>
+
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

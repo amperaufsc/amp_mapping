@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="state_machine_as" exec="state_node" name="state_machine_as" output="screen">
+    <param from="$(find-pkg-share carlos)/config/carlos_config.yaml" />
+  </node>
+</launch>
