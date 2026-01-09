@@ -1,7 +1,7 @@
-### Localization and Mapping 
+# Localization and Mapping 
 This repository contains the mapping-related packages responsible for generating spatial representations of the environment. The mapping stack integrates both visual-based and pose-graph-based SLAM solutions to ensure consistent map reconstruction and localization within a ROS 2 ecosystem.
 
-# The mapping modules used include:
+## The mapping modules used include:
 ORB-SLAM for visual SLAM and real-time pose estimation
 SLAMToolbox for incremental pose-graph mapping, loop closure, and persistent map handling
 A custom mapper algorithm for environment reconstruction and track representation
