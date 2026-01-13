@@ -28,9 +28,11 @@ There is also a `launch` directory containing all the ROS2 launch files for each
 
 ```bash
 ros2 run ros2_mapper mapper_node.py
+```
 
 ```bash
 ros2 launch ros2_mapper mapper_launch.py
+```
 
 ## Dependencies
 
