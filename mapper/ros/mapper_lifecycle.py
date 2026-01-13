@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 import rclpy
-from rclpy.lifecycle import LifecycleNode
-from rclpy.lifecycle import State
-from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.node import Node
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
 import numpy as np
-from std_msgs.msg import String
 from fs_msgs.msg import Track
-from fs_msgs.msg import ConeWithCovariance, Cone
-from fs_msgs.msg import TrackStampedWithCovariance, TrackStamped
+from fs_msgs.msg import ConeWithCovariance
+from fs_msgs.msg import TrackStampedWithCovariance
 from message_filters import Subscriber, ApproximateTimeSynchronizer
 import rclpy.time
 from src.mapper_function import LuisLopesMappingMethod
@@ -24,37 +20,63 @@ from tf2_ros import LookupTransform
 from rclpy.lifecycle import LifecycleNode, LifecycleState, TransitionCallbackReturn
 from lifecycle_msgs.srv import GetState, ChangeState
 from lifecycle_msgs.msg import Transition, TransitionEvent
-import time
-import asyncio
-import os
+from std_msgs.msg import String
 import sys
-import time
 
 
 
 class MapperNode(LifecycleNode):
 
     def __init__(self):
-        super().__init__('mapper_node')
-        self._tf_buffer=Buffer()        
-        self.track_received = False
-        self.first_pose=True
-        self.first_track=True
-        self.transform_received=False
-        self.queue_size = 10
-        self.max_delay = 1
-        self.time_gap = 1
-        self.get_logger().warning("construi")
-                
-    def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.get_logger().info('IN on_cleanup')
-        if hasattr(self, 'track_pub'):
-            self.destroy_lifecycle_publisher(self.track_pub)
+        super().__init__('mapper_node_lifecycle')
+        
+    def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        try:
 
-        if hasattr(self, 'time_sync'):
-            self.time_sync.callbacks.clear()
+            self._tf_buffer=Buffer()
+            self.track_sub = Subscriber(self,TrackStampedWithCovariance,"/track")
+            self.odom_sub = Subscriber(self,Odometry,"odom")
+            self.tf_listener = TransformListener(self._tf_buffer,self)
+            self.track_pub = self.create_publisher(Track, 'track_pub',10)
             
-        return TransitionCallbackReturn.SUCCESS   
+            self.track_received = False
+            self.first_pose=True
+            self.first_track=True
+            self.transform_received=False
+            self.time_gap = 1
+
+            # Publisher resposnavel pela ativação dos leds do carro baseado em seu estado
+            self.led_pub = self.create_publisher(String, '/AMP/as_status_indicator', 10)
+            self.transition_event_pub = self.create_publisher(TransitionEvent, 'EbsNOTMissionFinished', 10)
+            self.led_msg = String()
+            self.get_logger().warning("construi")
+
+            self.get_logger().info('Configuração MAPPER concluída com sucesso.')
+            return TransitionCallbackReturn.SUCCESS
+        except Exception as e:
+            self.get_logger().info('FALHA AO CONFIGURAR O MAPPER')
+            return TransitionCallbackReturn.FAILURE
+
+    def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        try:
+
+            queue_size = 10
+            max_delay = 1
+            self.time_sync = ApproximateTimeSynchronizer([self.track_sub,self.odom_sub],queue_size,max_delay)
+            self.time_sync.registerCallback(self.sync_callback)
+
+            self.get_logger().info('MAPPER ATIVADO COM SUCESSO')
+            return TransitionCallbackReturn.SUCCESS
+        
+        except Exception as e:
+            self.get_logger().info('FALHA AO ATIVAR O MAPPER')
+            return TransitionCallbackReturn.FAILURE
+
+    
+    def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self.get_logger().info("Into Deactivate MAPPER")
+        self.is_activated = False
+        return TransitionCallbackReturn.SUCCESS    
     
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         self.get_logger().info("Shutdown MAPPER.")
@@ -65,36 +87,9 @@ class MapperNode(LifecycleNode):
             self.time_sync.callbacks.clear() 
 
         return TransitionCallbackReturn.SUCCESS    
-    
-    def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.get_logger().info('Configuring MapperNode...')
-        self.track_sub = Subscriber(self,TrackStampedWithCovariance,"/track")
-        self.odom_sub = Subscriber(self,Odometry,"/orbslam/odom")
-        self.tf_listener = TransformListener(self._tf_buffer,self)
-        self.track_pub = self.create_publisher(Track, '/track_pub', 10)
-
-        #alterador do estado do state_machine_as
-        self.transition_event_pub = self.create_publisher(TransitionEvent, 'EbsNOTMissionFinished', 10) 
-        self.led_pub = self.create_publisher(String, '/AMP/as_status_indicator', 10)
-        self.led_msg = String()
-        self.get_logger().info('Configuração MAPPER concluída com sucesso.')
-        return TransitionCallbackReturn.SUCCESS
-
-        
-    
-    def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.get_logger().info('Activating MapperNode...')
-        self.is_activated = True
-        self.time_sync = ApproximateTimeSynchronizer([self.track_sub,self.odom_sub],self.queue_size,self.max_delay)
-        self.time_sync.registerCallback(self.sync_callback)
-        return super().on_activate(state)
-    
-    def on_deactivate(self, state):
-        self.get_logger().info("Into Deactivate MAPPER")
-        self.is_activated = False
-        return super().on_deactivate(state)
 
     def sync_callback(self,track,odom):
+        
         self.get_logger().warning("entrei no callbackk")
         
         tempo = 0
@@ -124,6 +119,7 @@ class MapperNode(LifecycleNode):
                 
                 track = self.map_to_track(self.map.map)
                 
+                self.get_logger().info("PUBLIQUEI")
                 self.track_pub.publish(track)
             else:
 
