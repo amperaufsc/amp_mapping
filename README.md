@@ -1,103 +1,74 @@
-# Mapping and Cone Clustering
-
-This repository contains the modules responsible for environment mapping and cone-based track reconstruction. These components receive perception data, perform spatial clustering using the Luiz López cone clustering algorithm, and generate a structured track map to be consumed by downstream planning and control subsystems.
-
-## The mapping subsystem handles:
-
-Cone detection aggregation from perception inputs
-Spatial filtering and outlier rejection
-Cone clustering using the Luiz López algorithm
-Publishing consistent map representations for planning
-
-##The clustering algorithm (Luiz López method):
-
-Associates detected cones into left and right track boundaries
-Uses geometric proximity and heading continuity constraints
-Handles partial observations and missing cones
-Outputs ordered cone sequences representing track limits
-
-# Clustering Parameters
-## Gamma
-
-In the Luiz Lopes cone clustering algorithm, the parameter γ (gamma) acts as a weighting factor that balances spatial proximity and geometric consistency during cluster formation. Practically, γ regulates how strongly the algorithm penalizes associations between cone detections that are close in distance but inconsistent in orientation or expected track structure.
-
-Higher γ values make the clustering more conservative, reducing incorrect associations at the cost of potentially splitting valid clusters. Lower γ values make clustering more permissive, increasing sensitivity but also the risk of forming spurious groupings. Therefore, γ is treated as a tunable hyperparameter adjusted empirically to achieve a trade-off between robustness and responsiveness.
-
-## Covariance
-
-Covariance is used to represent the spatial uncertainty of estimated cone positions within each cluster. Each cluster maintains a covariance matrix describing the dispersion of detections around the estimated cone center.
-
-Mathematically, the covariance encodes both variance along each axis and correlation between axes, allowing the algorithm to infer the principal orientation and confidence of each cluster. Small covariance values indicate high confidence in the cone position estimate, while large covariance values suggest noisy or ambiguous detections.
-
-This uncertainty representation is later exploited by downstream mapping and planning modules to weight cone reliability during track reconstruction.
-
-## System Data Flow (Conceptual)
-Perception → Mapping → Path Planning → Vehicle Control → Actuation
-
-Both subsystems interface through ROS 2 topics using consistent timestamping and coordinate frames, enabling integration with upstream modules such as mapping and perception, and downstream modules for actuation.
+# Lifecycle 
+The LifecycleNode organizes the code into primary states (Primary States) and transition phases (Transitional States). This allows the node to follow a standardized lifecycle protocol during its activation within the pipeline, including a proper shutdown procedure in case of runtime issues. 
 
 
----
+### Primary State:
 
-# ROS Interfaces
-
-## Topics (Example)
-
-  self.track_sub = Subscriber(self,TrackStampedWithCovariance,"track")
-  self.odom_sub = Subscriber(self,Odometry,"odom")
-        
-       
-        
-
-## Message Time Synchronization
-### Approximate Time Synchronizer
-
-To ensure temporal consistency between mapping outputs and vehicle state estimation, this package employs the ApproximateTimeSynchronizer from the ROS 2 message_filters library. This mechanism synchronizes incoming messages from multiple topics based on their timestamps, allowing reliable data association even when exact time alignment is not possible.
-
-In particular, the mapping node synchronizes:
+- unconfigured
+- inactive
+- active
+- shutdown
 
 
-`TrackStampedWithCovariance` – clustered track boundaries with uncertainty information
+### Transitional State:
 
-`Odometry` – vehicle pose and motion state
-
-Since cone clustering and odometry pipelines operate at different update rates and may experience transport latency, strict timestamp equality would lead to frequent message drops. The approximate synchronizer instead matches messages whose timestamps fall within a configurable tolerance window.
-
-This guarantees that the clustering results are always processed together with a coherent vehicle pose estimate, preventing spatial inconsistencies in track reconstruction and improving stability in downstream planning and control modules.
-
-Typical configuration:
-
-Queue size: configurable based on sensor rates
-
-Time tolerance (slop): tuned to match perception and odometry latency
-
-This synchronization strategy ensures robust integration between perception-driven mapping and state estimation in real-time operation.
-
-> Topics and messages used in Mapper package.
-
----
-
-| Module           | Direction | Topic                     | Message Type                 | Notes |
-|------------------|-----------|---------------------------|-------------------------------|-------|
-| Mapper     | Sub       | `/odom`                       | `sensor_msgs/Odom`                       | Odometry input |
-| Mapper     | Sub       | `/TrackStampedWithCovariance` | `fs_msgs/ConeWithCovariance[] track`     | Track input    |
-| Mapper     | Pub       | `/Track`                      | `fs_msgs/Cone[] track`                   | Track output   |
+- configuring
+- activating
+- deactivating
+- cleaningup
+- shuttingdown
 
 
-# Dependencies
 
-Core dependencies (minimum):
+Below is a simple state diagram illustrating the Lifecycle states and their transitions:
 
-- ROS 2 Humble (or newer)
-- `rclcpp` / `rclpy`
-- `nav_msgs`, `geometry_msgs`, `sensor_msgs`, `lifecycle_msgs`, `fs_msgs`
-- `tf2` + `tf2_ros`
-- `colcon` (build system)
-
----
+![simple lifecycle](lifecycle1.png)
 
 
-## Commands for compiling packages 
+
+
+
+Now, a more detailed diagram:
+
+![detailed lifecycle](lifecycle2.png)
+
+
+
+
+# Changes in the node:
+
+Within the already existing callbacks, the changes are minimal. The main difference is that, inside the node—after the constructor—three additional functions are added:
+
+### on_configure:
+
+Within this callback, the node’s parameters and publishers are declared.
+
+
+### on_activate:
+
+Within this callback, the node’s subscribers are declared.
+
+
+### on_shutdown
+
+Within this callback, the node enters a frozen state, where it no longer executes any logic, requiring the node to be restarted in such cases.
+
+
+
+# Debug
+
+To check the current state of a running node:
+`ros2 lifecycle get /node_name`
+
+To set a new state for the node:
+
+`ros2 lifecycle set /node_name <state_number / state_name>`
+
+If it is not possible to transition to the desired state from the current state, a corresponding warning is returned.
+
+
+
+# Commands for compiling packages 
 
 ### For compiling both, use: 
 ```bash
@@ -116,11 +87,11 @@ Core dependencies (minimum):
 ### Mapper launchs: 
 
 ```bash
-    ros2 run ros2_mapper mapper_node.py
+    ros2 run ros2_mapper mapper_lifecycle.py
    ```
 
 ```bash
-    ros2 launch ros2_mapper mapper.launch.py
+    ros2 launch ros2_mapper mapper_lifecycle.launch.py
    ```
 ## Simulation Track Test Node
 ### sim_track_node
