@@ -23,11 +23,7 @@ find_package(lifecycle_msgs REQUIRED)
          ros/mapper_node.py 
          DESTINATION lib/${PROJECT_NAME}
  )
- install(
-         PROGRAMS 
-         ros/lifecycle_mapper_node.py 
-         DESTINATION lib/${PROJECT_NAME}
- )
+
  install(
          PROGRAMS 
          ros/sim_track_node.py 
@@ -68,11 +64,7 @@ install(
         src/vehicle_state.py
         DESTINATION lib/${PROJECT_NAME}
 )
-install(
-        PROGRAMS 
-        ros/lifecycle_mapper_v1.py
-        DESTINATION lib/${PROJECT_NAME}
-)
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
