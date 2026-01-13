@@ -106,7 +106,7 @@ Core dependencies (minimum):
 
 ### For compiling individualy, use: 
 ```bash
-    colcon build --packages-select ros2_mapper
+    colcon build --packages-select mapper
    ```
 
 
@@ -116,11 +116,11 @@ Core dependencies (minimum):
 ### Mapper launchs: 
 
 ```bash
-    ros2 run ros2_mapper mapper_node.py
+    ros2 run mapper mapper_node.py
    ```
 
 ```bash
-    ros2 launch ros2_mapper mapper.launch.py
+    ros2 launch mapper mapper.launch.py
    ```
 ## Simulation Track Test Node
 ### sim_track_node
