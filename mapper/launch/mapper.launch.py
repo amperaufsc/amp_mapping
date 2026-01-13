@@ -16,7 +16,7 @@ def generate_launch_description():
         LaunchArg('odom',default_value=['odom'],description='odometri msg'),
         LaunchArg('track_pub',default_value=['track_pub'],description='track msg after Luiz Lopez'),
         Node(
-            package='ros2_mapper',
+            package='mapper',
             executable='mapper_node.py',
             name='mapper_node',
             namespace=LaunchConfiguration('namespace'),

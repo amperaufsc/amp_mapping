@@ -16,7 +16,7 @@ def generate_launch_description():
         LaunchArg('odom',default_value=['odom'],description='simulation odom'),
         LaunchArg('track_pub',default_value=['track_pub'],description='track msg after transform'),
         Node(
-            package='ros2_mapper',
+            package='mapper',
             executable='sim_track_node.py',
             name='sim_mapper_node',
             namespace=LaunchConfiguration('namespace'),

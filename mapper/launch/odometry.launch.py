@@ -13,7 +13,7 @@ def generate_launch_description():
         LaunchArg('odom_pub',default_value=['orbslam/odom'],description='odometry msg publisher'),
         LaunchArg('pose_sub',default_value=['/orbslam3/orbslam/pose'],description='pose msg subscriber'),
         Node(
-            package='ros2_mapper',
+            package='mapper',
             executable='odometry_message.py',
             name='odometry_slam',
             remappings=[('odom_pub',LaunchConfiguration('odom_pub')),

@@ -11,7 +11,7 @@ def generate_launch_description():
 
 
         Node(
-            package='ros2_mapper',  # Substitua pelo nome correto do seu pacote
+            package='mapper',  # Substitua pelo nome correto do seu pacote
             executable='sim_track_node',  # Substitua pelo nome correto do seu executável
             name='sim_track_node',
             output='screen',
