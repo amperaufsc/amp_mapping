@@ -23,3 +23,26 @@ The `sim_track_node` is an essential ROS2 node used in simulation with FSDS. It 
 ## Launcher
 
 There is also a `launch` directory containing all the ROS2 launch files for each of the nodes listed above.
+
+## Running & Launching
+
+```bash
+ros2 run ros2_mapper mapper_node.py
+
+```bash
+ros2 launch ros2_mapper mapper_launch.py
+
+## Dependencies
+
+Core dependencies (minimum):
+
+- ROS 2 Humble (or newer)
+- rclcpp / rclpy
+- nav_msgs, geometry_msgs, sensor_msgs, lifecycle_msgs, fs_msgs
+- tf2 + tf2_ros
+- colcon (build system)
+
+## Troubleshooting
+
+- **TF2 Transformations:** The mapper node requires TF2 transformations to function properly. Ensure that the transforms are being received.
+- **Timestamp Synchronization:** An `ApproximateTimeSynchronizer` is used with track and odometry messages. Ensure that both topics have synchronized timestamps.
