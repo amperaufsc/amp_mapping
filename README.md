@@ -39,19 +39,20 @@ Now, a more detailed diagram:
 
 Within the already existing callbacks, the changes are minimal. The main difference is that, inside the node—after the constructor—three additional functions are added:
 
+
 ### on_configure:
 
-Within this callback, the node’s parameters and publishers are declared.
+Within this function, the node’s parameters, subscribers and publishers are declared.
 
 
 ### on_activate:
 
-Within this callback, the node’s subscribers are declared.
+Within this function, the node’s main callback is called.
 
 
 ### on_shutdown
 
-Within this callback, the node enters a frozen state, where it no longer executes any logic, requiring the node to be restarted in such cases.
+Within this function, the node enters a frozen state, where it no longer executes any logic, requiring the node to be restarted in such cases.
 
 
 
