@@ -27,7 +27,7 @@ class MapperNode(Node):
         self.track_sub = Subscriber(self,TrackStampedWithCovariance,"track")
         self.odom_sub = Subscriber(self,Odometry,"odom")
         self.tf_listener = TransformListener(self._tf_buffer,self)
-        self.track_pub = self.create_publisher(Track, 'track_pub',10)
+        self.track_pub = self.create_publisher(Track, 'track_sim',10)
         
         self.track_received = False
         self.first_pose=True
@@ -36,7 +36,7 @@ class MapperNode(Node):
         queue_size = 10
         max_delay = 1000000000
         self.time_gap = 1
-        self.get_logger().warning("construi")
+        self.get_logger().warning("initialized")
         
         
         
@@ -90,7 +90,7 @@ class MapperNode(Node):
             else:
 
                 try:
-                    self.trans=self._tf_buffer.lookup_transform("left_camera_link","oak_left_camera_optical_frame",rclpy.time.Time())
+                    self.trans=self._tf_buffer.lookup_transform("fsds/map", "fsds/cam2", rclpy.time.Time())
                     self.get_logger().info(self.trans.child_frame_id)
                     self.get_logger().warning("Deu bom")
                     self.transform_received = True
@@ -172,6 +172,7 @@ class MapperNode(Node):
     def track_to_obstacle(self, track):
         self.obstacle_numpy_array = []
         for cone in track.track:
+            color = None
             x = cone.location.x 
             y = cone.location.y 
             if cone.color == 0:
