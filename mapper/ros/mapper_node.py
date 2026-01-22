@@ -90,6 +90,7 @@ class MapperNode(Node):
             else:
 
                 try:
+                    #self.trans=self._tf_buffer.lookup_transform("fsds/map","fsds/map",rclpy.time.Time()) #Use for simulation in FSDS
                     self.trans=self._tf_buffer.lookup_transform("left_camera_link","oak_left_camera_optical_frame",rclpy.time.Time())
                     self.get_logger().info(self.trans.child_frame_id)
                     self.get_logger().warning("Deu bom")
