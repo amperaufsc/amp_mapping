@@ -22,7 +22,7 @@ def generate_launch_description():
         LaunchArg('namespace',default_value=['AMP'],description='namespace for Node'),
         LaunchArg('track',default_value=['/track_pub/trackstamped'],description='simulation track'),
         LaunchArg('odom',default_value=['/fsds/testing_only/odom'],description='simulation odom'),
-        LaunchArg('track_sim',default_value=['/track_pub/track_map'],description='track msg after transform'),
+        LaunchArg('track_pub',default_value=['/track_pub/track_map'],description='track msg after transform'),
         Node(
             package='mapper',
             executable='mapper_node.py',
@@ -30,6 +30,6 @@ def generate_launch_description():
             namespace=LaunchConfiguration('namespace'),
             remappings=[('track',LaunchConfiguration('track')),
                         ('odom',LaunchConfiguration('odom')),
-                        ('track_sim',LaunchConfiguration('track_sim'))]
+                        ('track_pub',LaunchConfiguration('track_pub'))]
         )
     ])    
