@@ -3,10 +3,10 @@ class Obstacle:
     def __init__(self, x, y, confidence, label,deviation, count=1, id=0,time = 1e-15):
         self.x = x
         self.y = y
-        self.confidence = 0.7
+        self.confidence = confidence
         self.label = label
         self.count = count
-        self.deviation = 0.3
+        self.deviation = deviation
         self.id = id
         self.last_observed_timestamp = time
 
