@@ -27,7 +27,7 @@ class MapperNode(Node):
         self.track_sub = Subscriber(self,TrackStampedWithCovariance,"track")
         self.odom_sub = Subscriber(self,Odometry,"odom")
         self.tf_listener = TransformListener(self._tf_buffer,self)
-        self.track_pub = self.create_publisher(Track, 'track_sim',10)
+        self.track_pub = self.create_publisher(Track, 'track_pub',10)
         
         self.track_received = False
         self.first_pose=True
@@ -180,7 +180,7 @@ class MapperNode(Node):
             elif cone.color == 1 or cone.color == 4:
                 color = 4
             confidence = 0.7
-            deviation = 0.3
+            deviation = 0.5 
             obstacle = Obstacle(x,y,confidence,color,deviation)
             self.obstacle_numpy_array.append(obstacle)
         if self.first_track:
