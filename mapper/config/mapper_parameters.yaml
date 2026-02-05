@@ -1,11 +1,10 @@
 AMP:                # nome do namespace  
-  mapper_node:     # nomde do nó (supersuper().__init__) e o que ta no launch
+  mapper_node:     
     ros__parameters:
 
-      # PID gains - longitudital control
-      gamma : 5.99     # ganho proporcional
-      saturation_error: 0.15      # ganho integrativo
-      last_time_limit: 5       # ganho derivativo
+      gamma : 5.99
+      saturation_error: 0.15
+      last_time_limit: 5     
 
       confidence: 0.7
       deviation: 0.3
