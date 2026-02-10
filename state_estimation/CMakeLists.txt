@@ -11,6 +11,18 @@ find_package(ament_cmake REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(fs_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+add_executable(vectornav_pose_node ros2/vectornav_pose_node.cpp)
+
+ament_target_dependencies(
+  vectornav_pose_node
+  rclcpp
+  geometry_msgs
+)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -18,6 +30,12 @@ find_package(fs_msgs REQUIRED)
 install(
         PROGRAMS 
         ros2/estimation_node.py
+        DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+        TARGETS
+        vectornav_pose_node
         DESTINATION lib/${PROJECT_NAME}
 )
 

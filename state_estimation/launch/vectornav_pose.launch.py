@@ -17,8 +17,8 @@ def generate_launch_description():
         
         Node(
             package='state_estimation',
-            executable='pose_node',
-            name='pose_node',
+            executable='vectornav_pose_node',
+            name='vectornav_pose_node',
             #namespace= LaunchConfig('namespace'),
             remappings=[('input_pose', LaunchConfig('input_pose')),
                         ('output_pose', LaunchConfig('output_pose')),
