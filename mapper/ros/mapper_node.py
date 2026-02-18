@@ -34,7 +34,7 @@ class MapperNode(Node):
         self.first_track=True
         self.transform_received=False
         queue_size = 10
-        max_delay = 1000000000
+        max_delay = 1
         self.time_gap = 1
         self.get_logger().warning("construi")
         
@@ -57,16 +57,7 @@ class MapperNode(Node):
             if self.transform_received:
                 self.get_logger().warning("transformei")
                 
-                '''for cone in track.track:
-                    self.get_logger().info(f"COOOOONEEEEEEE: {cone.location.x,cone.location.y,cone.location.z}")'''
-                
-
                 rotate_track =self.rotate_track(track,self.trans)
-
-                '''for cone in rotate_track:
-                    self.get_logger().info(f"ROTACAIOEJGIOAEPGK: {cone}")'''
-
-                #self.get_logger().info(rotate_track)
 
                 track=self.array_to_track(rotate_track,track)
                 self.track_to_obstacle(track)
@@ -80,12 +71,7 @@ class MapperNode(Node):
 
                 self.map=self.mapper.update_map(self.obstacle_numpy_array,self.state,self.map)
                 
-                '''for obstacle in self.map.map:
-
-                    self.get_logger().info(f"Cone: {obstacle.x, obstacle.y}")'''
-
                 track = self.map_to_track(self.map.map)
-                self.get_logger().info("TO TENTANDO")
                 self.track_pub.publish(track)
             else:
 

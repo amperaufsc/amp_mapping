@@ -15,3 +15,7 @@ repositories:
         url: https://github.com/amperaufsc/kalman_filter.git 
         version: main
 
+    robot_localization
+        type: git
+        url: https://github.com/amperaufsc/robot_localization.git
+        version: humble-devel
