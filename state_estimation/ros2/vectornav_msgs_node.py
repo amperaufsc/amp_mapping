@@ -17,7 +17,7 @@ class VectornavMsgsNode(Node):
         self.ins_sub = self.create_subscription(InsGroup, 'Ins_sub', self.gps_callback, 10)
         self.attitude_sub = Subscriber(self, AttitudeGroup, 'Attitude_sub')
 
-        self.imu_pub = self.create_publisher(Imu, 'imu/data', 10)
+        self.imu_pub = self.create_publisher(Imu, 'imu', 10)
         self.gps_pub = self.create_publisher(NavSatFix, 'gps/fix', 10)
 
         queue_size = 10
