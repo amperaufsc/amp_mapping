@@ -30,6 +30,7 @@ class VectornavMsgsNode(Node):
     def imu_callback(self, imu_msg, attitude_msg):
         imu = Imu()
         imu.header = imu_msg.header
+        imu.header.frame_id = 'base_link'
 
         imu.orientation.x = attitude_msg.quaternion.y
         imu.orientation.y = attitude_msg.quaternion.x
@@ -64,6 +65,7 @@ class VectornavMsgsNode(Node):
     def gps_callback(self, ins_msg):
         gps = NavSatFix()
         gps.header = ins_msg.header
+        gps.header.frame_id = 'base_link'
 
         gps.latitude = ins_msg.poslla.x
         gps.longitude = ins_msg.poslla.y
