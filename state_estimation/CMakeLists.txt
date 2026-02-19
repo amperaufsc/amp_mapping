@@ -34,28 +34,16 @@ install(
 )
 
 install(
+        PROGRAMS 
+        ros2/vectornav_msgs_node.py
+        DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
         TARGETS
         vectornav_pose_node
         DESTINATION lib/${PROJECT_NAME}
 )
-
-# install(
-#         DIRECTORY
-#         include
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
-
-# install(
-#         DIRECTORY
-#         lateral_control
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
-
-# install(
-#         DIRECTORY
-#         longitudinal_control
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
