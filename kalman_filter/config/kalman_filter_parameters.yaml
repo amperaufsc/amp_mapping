@@ -1,0 +1,19 @@
+AMP:                          # nome do namespace  
+  kalman_filter_node:               # nomde do nó (supersuper().__init__) e o que ta no launch file
+    ros__parameters:
+
+      #NÃO TA PRONTO SÓ PUXEI DO MATLAB
+      imu_update_time = 0.01
+      dvl_update_time = 0.1
+      slam_update_time = 0.1
+
+      accelerometer_random_walk_bias = [0.000001,0.000001,0.000001]
+      gyroscope_random_walk_bias = [0.000001,0.000001,0.000001]
+
+      accelerometer_noise = [0.000001,0.000001,0.000001]
+      gyroscope_noise = [0.000001,0.000001,0.000001]
+      corr_noise = [0.000001,0.000001,0.000001]
+
+      dvl_noise = 0.000001,0.000001,0.000001]
+      slam_noise = [0.000001,0.000001,0.000001,0.000001,0.000001,0.000001]
+      #corr_t = matriz de 1 (3x1)
