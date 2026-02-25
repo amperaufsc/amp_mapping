@@ -6,10 +6,20 @@ from launch.actions import DeclareLaunchArgument
 from launch.actions import ExecuteProcess
 from launch.actions import DeclareLaunchArgument as LaunchArg
 from launch.actions import ExecuteProcess
+import os
+from ament_index_python.packages import get_package_share_directory
 
 
 
 def generate_launch_description():
+
+
+    parameters_file = os.path.join(
+        get_package_share_directory('control'),
+        'config',
+        'mapper_parameters.yaml'
+    )
+
     return LaunchDescription([
         LaunchArg('namespace',default_value=['namespace'],description='namespace for Node'),
         LaunchArg('track',default_value=['track'],description='detected track'),
@@ -23,7 +33,7 @@ def generate_launch_description():
             remappings=[
                 ('track', LaunchConfiguration('track')),
                 ('odom', LaunchConfiguration('odom')), 
-                ('track_pub', LaunchConfiguration('track_pub')),
-            ]
+                ('track_pub', LaunchConfiguration('track_pub'))],
+            parameters=[parameters_file],
         )
     ])
