@@ -7,7 +7,13 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 # find dependencies
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(fs_msgs REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -20,6 +26,12 @@ install(
 )
 
 install(
+        DIRECTORY
+        error_space_kalman_filter
+        DESTINATION lib/${PROJECT_NAME} 
+)
+
+install(
         DIRECTORY 
         launch
         DESTINATION share/${PROJECT_NAME}
@@ -28,7 +40,7 @@ install(
 install(
         DIRECTORY
         config
-        share/${PROJECT_NAME} 
+        DESTINATION share/${PROJECT_NAME}
 )
 
 

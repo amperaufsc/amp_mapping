@@ -1,8 +1,7 @@
 import numpy as np
-#ESSA É APENAS A BASE E NÃO ESTÁ 100% COERENTE COM O ESPERADO
 
 class Error_Space_Kalman_Filter:
-    def __init__(self, imu_update_time=0.01, dvl_update_time=0.1, slam_update_time=0.1, accelerometer_random_walk_bias = [1e-6,1e-6,1e-6], 
+    def __init__(self,imu_update_time=0.01, dvl_update_time=0.1, slam_update_time=0.1, accelerometer_random_walk_bias = [1e-6,1e-6,1e-6],
                  gyroscope_random_walk_bias = [1e-6,1e-6,1e-6], accelerometer_noise = [1e-6,1e-6,1e-6], gyroscope_noise = [1e-6,1e-6,1e-6],
                  corr_noise = [1e-6,1e-6,1e-6], dvl_noise = [1e-6,1e-6,1e-6], slam_noise = [1e-6,1e-6,1e-6,1e-6,1e-6,1e-6], corr_t = np.ones(3)):
         
@@ -10,24 +9,25 @@ class Error_Space_Kalman_Filter:
         self.imu_update_time = imu_update_time
         self.dvl_update_time = dvl_update_time
         self.slam_update_time = slam_update_time
-        self.accelerometer_random_walk_bias = np.array(accelerometer_random_walk_bias)
-        self.gyroscope_random_walk_bias = np.array(gyroscope_random_walk_bias)
-        self.accelerometer_noise = np.array(accelerometer_noise)
-        self.gyroscope_noise = np.array(gyroscope_noise)
-        self.corr_noise = np.array(corr_noise)
-        self.dvl_noise = np.array(dvl_noise)
-        self.slam_noise = np.array(slam_noise)
-        self.corr_t = corr_t
+        self.accelerometer_random_walk_bias = np.array(accelerometer_random_walk_bias).reshape(-1,1)
+        self.gyroscope_random_walk_bias = np.array(gyroscope_random_walk_bias).reshape(-1,1)
+        self.accelerometer_noise = np.array(accelerometer_noise).reshape(-1,1)
+        self.gyroscope_noise = np.array(gyroscope_noise).reshape(-1,1)
+        self.corr_noise = np.array(corr_noise).reshape(-1,1)
+        self.dvl_noise = np.array(dvl_noise).reshape(-1,1)
+        self.slam_noise = np.array(slam_noise).reshape(-1,1)
+        self.corr_t = corr_t.reshape(-1,1)
 
         # Estados internos (private)
-        self.error_x = np.zeros((18, 1))
+        # Todos os vetores estão como coluna (Nx1)
+        self.error_x = np.zeros((18,1), dtype=float)
         self.covariance_error_x = np.eye(18) * 1e-8  
         self.imu_counter = 0
         self.dvl_counter = 0
         self.slam_counter = 0
-        self.position = np.zeros((3, 1))
-        self.velocity = np.zeros((3, 1))
-        self.orientation = np.zeros((3, 1))
+        self.position = np.zeros((3,1))
+        self.velocity = np.zeros((3,1))
+        self.orientation = np.zeros((3,1))
         self.gravity = np.array([[0], [0], [9.81]])
         self.C_n_b = np.eye(3)
         self.alfa = np.zeros((3,1))
@@ -37,8 +37,8 @@ class Error_Space_Kalman_Filter:
         self.last_orientation = np.zeros((3,1))
 
         # SetupImpl
-        self.slam_covariance = np.diag(self.slam_noise / self.slam_update_time)
-        self.dvl_covariance = np.diag(self.dvl_noise / self.dvl_update_time)
+        self.slam_covariance = np.diag(self.slam_noise.reshape(-1) / self.slam_update_time)
+        self.dvl_covariance = np.diag(self.dvl_noise.reshape(-1) / self.dvl_update_time)  # (3x3)
         diag_elements = np.concatenate([np.ones(3) * 10e-4,
                                         self.accelerometer_noise.flatten(),
                                         self.gyroscope_noise.flatten(),
@@ -47,8 +47,9 @@ class Error_Space_Kalman_Filter:
                                         self.corr_noise.flatten()])
         self.proccess_covariance = np.diag(diag_elements)
 
-    def ekf_principal(self, imu, dvl, slam): #YEP
+    def ekf_principal(self, imu, dvl, slam): #
         [pos, vel, ori] = self.mechanization(imu[0:3],imu[3:6])
+        print('_________________')
         self.update_imu(imu)
         self.slam_counter +=1
         self.dvl_counter +=1
@@ -58,13 +59,17 @@ class Error_Space_Kalman_Filter:
         self.velocity = vel
 
         if self.dvl_counter>=(self.dvl_update_time/self.imu_update_time):
-            self.updateDVL(dvl)
+            print('==========================')
+            print('DDDDDDDDDDVVVVVVVLLLLLLLLL')
+            self.update_dvl(dvl)
             self.dvl_counter = 0
             self.error_velocity = self.error_x[3:6]
             self.velocity = self.velocity + self.error_velocity
         
         if self.slam_counter >= (self.slam_update_time/self.imu_update_time):
-                self.updateSLAM(slam)
+                print('==========================')
+                print('SSSSSSLLLLLLLAAAAAAMMMMMMM')
+                self.update_slam(slam)
                 self.slam_counter = 0
                 self.error_position = self.error_x[0:3]
                 self.error_orientation = self.error_x[6:9]
@@ -76,9 +81,9 @@ class Error_Space_Kalman_Filter:
                 self.last_alfa_delta = np.zeros((3,1))
                 self.last_orientation = ori + self.error_orientation
         
-        return [self.position, self.velocity, self.orientation, self.error_x]
+        return [self.position, self.velocity, self.orientation]  #
 
-    def update_imu(self,imu): #YEP
+    def update_imu(self,imu): #
         A_k = self.get_proccess_jacobian_matrix(self.error_x, imu, self.imu_update_time, self.corr_t)
         self.error_x = A_k @ self.error_x
         B_k = self.get_proccess_noise_jacobian_matrix(self.error_x, self.imu_update_time)
@@ -86,28 +91,30 @@ class Error_Space_Kalman_Filter:
         return 
     
 
-    def update_dvl(self, dvl): #YEP
+    def update_dvl(self, dvl): #
         error_lambda = self.error_x[6:9]
-        R = self.C_n_b
-        predicted_measurement = self.dvl_measurement(self.error_x, self.velocity, R)
-        dvl_measurement = self.velocity - R @ dvl
+        R = self.C_n_b #(3x3)
+
+        predicted_measurement = self.dvl_measurement(self.error_x, self.velocity, R) #(3x1)
+        dvl_measurement = self.velocity - R @ dvl # (3x1) - (3x3)@(3x1) = (3x1)
         self.update_ekf(dvl_measurement, self.dvl_covariance, self.get_dvl_jacobian(self.error_x,self.velocity), predicted_measurement, self.get_dvl_noise_jacobian(self.error_x))
+        #                  (3,1),                (3x3),              (3X18)                                          (3x1)                         (3x3)
         return
         
         
-    def update_slam(self, slam): #YEP
+    def update_slam(self, slam): # slam = (3x1)
         predicted_measurement = self.slam_measurement(self.error_x)
-        slam_measurement = np.vstack((self.position - slam[0:3].reshape(3,1),
-                                      self.orientation - slam[3:6].reshape(3,1)))
+        slam_measurement = np.vstack((self.position - slam[0:3],
+                                      self.orientation - slam[3:6]))
         self.update_ekf(slam_measurement, self.slam_covariance, self.get_slam_jacobian(self.error_x), predicted_measurement, np.eye(6))
         return
 
 
-    def update_ekf(self, measurement, measurement_covariance, jacobian_matrix, predicted_measurement, noise_jacobian_matrix):  #YEP
-        P_ = self.covariance_error_x
-        H_k1 = jacobian_matrix
-        S_k1 = measurement_covariance
-        M_k1 = noise_jacobian_matrix
+    def update_ekf(self, measurement, measurement_covariance, jacobian_matrix, predicted_measurement, noise_jacobian_matrix): # (3,1), (3x3), (3X18), (3x1), (3x3)
+        P_ = self.covariance_error_x  # (18x18)
+        H_k1 = jacobian_matrix        # (3,18)
+        S_k1 = measurement_covariance # (3x3)
+        M_k1 = noise_jacobian_matrix  # (3x3)
 
         S = H_k1 @ P_ @ H_k1.T + M_k1 @ S_k1 @ M_k1.T
         K_k1 = P_ @ H_k1.T @ np.linalg.inv(S)
@@ -119,9 +126,10 @@ class Error_Space_Kalman_Filter:
 
 
     def mechanization(self, accel, gyro): 
-            velocity_dot = self.C_n_b @ accel + self.gravity
-            alfa_delta = (gyro+ self.last_gyro)/2*self.imu_update_time
-            beta_delta = 0.5 * np.cross((self.alfa + 1/6*self.last_alfa_delta), alfa_delta)
+            velocity_dot = self.C_n_b @ accel + self.gravity # (3x3)@(3x1) + (3x1) = (3x1)
+            alfa_delta = (gyro + self.last_gyro)/2*self.imu_update_time
+            d = self.alfa + 1/6*self.last_alfa_delta
+            beta_delta = 0.5 * np.cross(d.ravel(), alfa_delta.ravel()).reshape(3,1)
             
             self.alfa = self.alfa + alfa_delta
             self.beta = self.beta + beta_delta
@@ -135,25 +143,26 @@ class Error_Space_Kalman_Filter:
             velocity =  self.velocity + velocity_dot*self.imu_update_time
             orientation =  self.alfa + self.beta + self.last_orientation
 
-            self.C_n_b = self.euler_to_rot(self.orientation) #verificar isso aq usa o valor recem calculado? 
+            self.C_n_b = self.euler_to_rot(self.orientation) 
             return (position, velocity, orientation)
 
 
-    def get_rotation_matrix(self, error_lambda): #YEP
+    def get_rotation_matrix(self, error_lambda): #
         matrix_error_lambda = self.get_skew_symmetric_matrix(error_lambda)
         return np.eye(3) + matrix_error_lambda
     
 
-    def dvl_measurement(self, error_state, v_nom, R): #YEP
-        matrix_vnom = self.get_skew_symmetric_matrix(v_nom)
+    def dvl_measurement(self, error_state, v_nom, R): # (18x1), (3x1), (3x3)
+        matrix_vnom = self.get_skew_symmetric_matrix(v_nom)   #(3x3)    
+        # -(3x1) - (3x3)@(3x1) + (3x3)@(3x1) = (3x1)
         return (- error_state[3:6] - matrix_vnom @ error_state[6:9] + R @ error_state[15:18])
 
 
-    def slam_measurement(self, error_state): #YEP
-        return -np.vstack((error_state[0:3], error_state[6:9])).reshape(-1,1)
+    def slam_measurement(self, error_state): #YEP - VECTOR (6x1)
+        return -np.vstack((error_state[0:3], error_state[6:9]))
 
 
-    def get_slam_jacobian(self, x0): #YEP
+    def get_slam_jacobian(self, x0): #YEP - VECTOR (6X18)
         jacobian = np.array([
                             [-1,  0,  0, 0, 0, 0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [ 0, -1,  0, 0, 0, 0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -164,19 +173,19 @@ class Error_Space_Kalman_Filter:
         return jacobian
 
 
-    def get_dvl_jacobian(self, x0, v_nom): #YEP
-        v1 = x0[3]
-        v2 = x0[4]
-        v3 = x0[5]
-        lambda1 = x0[6]
-        lambda2 = x0[7]
-        lambda3 = x0[8]
-        bv1 = x0[15]
-        bv2 = x0[16]
-        bv3 = x0[17]
-        v_nom1 = v_nom[0]
-        v_nom2 = v_nom[1]
-        v_nom3 = v_nom[2]
+    def get_dvl_jacobian(self, x0, v_nom): #YEP - VECTOR (3X18)
+        v1 = x0[3][0]
+        v2 = x0[4][0]
+        v3 = x0[5][0]
+        lambda1 = x0[6][0]
+        lambda2 = x0[7][0]
+        lambda3 = x0[8][0]
+        bv1 = x0[15][0]
+        bv2 = x0[16][0]
+        bv3 = x0[17][0]
+        v_nom1 = v_nom[0][0]
+        v_nom2 = v_nom[1][0]
+        v_nom3 = v_nom[2][0]
 
         jacobian = np.array([
                             [0, 0, 0, -1,  0,  0,          bv2, bv3 - v_nom1,      -v_nom2, 0, 0, 0, 0, 0, 0,        1,  lambda1, lambda2],
@@ -185,10 +194,10 @@ class Error_Space_Kalman_Filter:
         return jacobian
 
 
-    def get_dvl_noise_jacobian(self, x0): #YEP
-        lambda1 = x0[6]
-        lambda2 = x0[7]
-        lambda3 = x0[8]
+    def get_dvl_noise_jacobian(self, x0): #YEP - VECTOR (3X3)
+        lambda1 = x0[6][0]
+        lambda2 = x0[7][0]
+        lambda3 = x0[8][0]
 
         jacobian = np.array([
                             [       1,  lambda1, lambda2],
@@ -196,7 +205,7 @@ class Error_Space_Kalman_Filter:
                             [-lambda2, -lambda3,       1]])
         return jacobian
 
-    def get_rodrigues_rotation_matrix(self, attitude_error): #YEP
+    def get_rodrigues_rotation_matrix(self, attitude_error): #YEP - vECTOR (3X3)
         norm_aterror = np.linalg.norm(attitude_error)
         if norm_aterror < 1e-8:
             return np.eye(3)
@@ -209,22 +218,22 @@ class Error_Space_Kalman_Filter:
         return R
 
 
-    def get_proccess_jacobian_matrix(self,x0,u,dt,T): # YEP
-        a1 =u[0]
-        a2 =u[1]
-        a3 =u[2]
-        v1 = x0[3]
-        v2 = x0[4]
-        v3 = x0[5]
-        lambda1 = x0[6]
-        lambda2 = x0[7]
-        lambda3 = x0[8]
-        bw1 = x0[12]
-        bw2 = x0[13]
-        bw3 = x0[14]
-        t1 = T[0]
-        t2 = T[1]
-        t3 = T[2]
+    def get_proccess_jacobian_matrix(self,x0,u,dt,T): # YEP - VECTOR (18X18)
+        a1 =u[0][0]
+        a2 =u[1][0]
+        a3 =u[2][0]
+        v1 = x0[3][0]
+        v2 = x0[4][0]
+        v3 = x0[5][0]
+        lambda1 = x0[6][0]
+        lambda2 = x0[7][0]
+        lambda3 = x0[8][0]
+        bw1 = x0[12][0]
+        bw2 = x0[13][0]
+        bw3 = x0[14][0]
+        t1 = T[0][0]
+        t2 = T[1][0]
+        t3 = T[2][0]
 
         jacobian = np.array([
                             [1, 0, 0,         dt,           0,           0,                                        0,                                         0,                                         0, 0, 0, 0,          0,           0,           0,         0,         0,         0],
@@ -248,10 +257,10 @@ class Error_Space_Kalman_Filter:
         return jacobian
 
 
-    def get_proccess_noise_jacobian_matrix(self,x0,dt): # YEP
-        lambda1 = x0[6]
-        lambda2 = x0[7]
-        lambda3 = x0[8]
+    def get_proccess_noise_jacobian_matrix(self,x0,dt): # YEP - VECTOR (18x18)
+        lambda1 = x0[6][0]
+        lambda2 = x0[7][0]
+        lambda3 = x0[8][0]
 
         jacobian = np.array([
                             [dt + 1,      0,      0,           0,           0,          0,           0,           0,          0,      0,      0,      0,      0,      0,      0,      0,      0,      0],
@@ -275,9 +284,11 @@ class Error_Space_Kalman_Filter:
         return jacobian
 
 
-    def get_skew_symmetric_matrix(self, vector): # YEP
+    def get_skew_symmetric_matrix(self, vector): # YEP - VECTOR (3x3)
         # função que acha a maatriz antissimétrica
-        vector_x, vector_y, vector_z = vector
+        vector_x = vector[0][0]
+        vector_y = vector[1][0]
+        vector_z = vector[2][0]
         return np.array([[ 0,  -vector_z,  vector_y],
                          [vector_z,  0,  -vector_x],
                          [-vector_y, vector_x,  0]])

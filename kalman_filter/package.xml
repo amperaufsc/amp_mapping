@@ -4,7 +4,7 @@
   <name>kalman_filter</name>
   <version>0.0.0</version>
   <description>
-    Error-State Kalman Filter para navegação inercial em ROS2
+    Error-State Kalman Filter para fusão de sensores em ROS2
   </description>
   <maintainer email="biaantunesvieira@gmail.com">biaantunes</maintainer>
   <license>Apache-2.0</license>
