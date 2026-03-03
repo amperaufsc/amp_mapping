@@ -32,6 +32,8 @@ class VectornavMsgsNode(Node):
         imu.header = imu_msg.header
         imu.header.frame_id = 'base_link'
 
+        #quaternion é dado no frame NED
+
         imu.orientation.x = attitude_msg.quaternion.y
         imu.orientation.y = attitude_msg.quaternion.x
         imu.orientation.z = - attitude_msg.quaternion.z 
@@ -44,16 +46,16 @@ class VectornavMsgsNode(Node):
                                       0.0, pitch_var, 0.0,
                                       0.0, 0.0, roll_var]
 
-        imu.angular_velocity.x = imu_msg.angularrate.y
-        imu.angular_velocity.y = imu_msg.angularrate.x
+        imu.angular_velocity.x = imu_msg.angularrate.x
+        imu.angular_velocity.y = - imu_msg.angularrate.y
         imu.angular_velocity.z = - imu_msg.angularrate.z
 
         imu.angular_velocity_covariance = [1e-6, 0.0, 0.0,
                                            0.0, 1e-6, 0.0,
                                            0.0, 0.0, 1e-6]
 
-        imu.linear_acceleration.x = imu_msg.accel.y
-        imu.linear_acceleration.y = imu_msg.accel.x
+        imu.linear_acceleration.x = imu_msg.accel.x
+        imu.linear_acceleration.y = - imu_msg.accel.y
         imu.linear_acceleration.z = - imu_msg.accel.z
 
         imu.linear_acceleration_covariance = [1e-4, 0.0, 0.0,
