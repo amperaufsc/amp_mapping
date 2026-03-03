@@ -18,6 +18,8 @@ find_package(fs_msgs REQUIRED)
 install(
         PROGRAMS 
         ros2/estimation_node.py
+        ros2/ekf_odom_node.py
+        ros2/ekf_odom_sim_node.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
