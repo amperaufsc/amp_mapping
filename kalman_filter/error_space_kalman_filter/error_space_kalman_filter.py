@@ -50,6 +50,9 @@ class Error_Space_Kalman_Filter:
     def ekf_principal(self, imu, dvl, slam): #
         [pos, vel, ori] = self.mechanization(imu[0:3],imu[3:6])
         print('_________________')
+        print('pos:',pos)
+        print('vel:',vel)
+        print('ori:',ori)
         self.update_imu(imu)
         self.slam_counter +=1
         self.dvl_counter +=1
