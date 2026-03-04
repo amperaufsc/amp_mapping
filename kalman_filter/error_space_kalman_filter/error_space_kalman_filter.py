@@ -105,7 +105,7 @@ class Error_Space_Kalman_Filter:
         return
         
         
-    def update_slam(self, slam): # slam = (3x1)
+    def update_slam(self, slam): # slam = (6x1)
         predicted_measurement = self.slam_measurement(self.error_x)
         slam_measurement = np.vstack((self.position - slam[0:3],
                                       self.orientation - slam[3:6]))

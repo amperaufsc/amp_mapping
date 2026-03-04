@@ -16,16 +16,18 @@ def generate_launch_description():
 
     return LaunchDescription([
         LaunchArg('namespace', default_value=['kalman_filter'], description='Namespace for node'),
-        LaunchArg('odom', default_value=['/fsds/testing_only/odom'], description='Odom message topic'),
-        LaunchArg('imu', default_value=['/fsds/imu'], description='imu message topic'),
-        LaunchArg('ekf_odometry', default_value=['/ekf_odometry'], description='EKF Odom message topic'),
+        LaunchArg('pose', default_value=['pose'], description='pose message topic'),
+        LaunchArg('odometry', default_value=['odometry'], description='odometry message topic'),
+        LaunchArg('imu', default_value=['imu'], description='imu message topic'),
+        LaunchArg('ekf_odometry', default_value=['ekf_odometry'], description='EKF Odom message topic'),
 
         Node(
             package='kalman_filter',
             executable='kalman_filter_node.py',
             name='kalman_filter_node',
             namespace= LaunchConfig('namespace'),
-            remappings=[('odom', LaunchConfig('odom')),
+            remappings=[('pose', LaunchConfig('pose')),
+                        ('odometry', LaunchConfig('odometry')),
                         ('imu', LaunchConfig('imu')),
                         ('ekf_odometry', LaunchConfig('ekf_odometry'))],
             parameters=[parameters_file],

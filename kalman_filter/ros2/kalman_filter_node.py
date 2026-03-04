@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from sensor_msgs.msg import Imu
 from error_space_kalman_filter.error_space_kalman_filter import Error_Space_Kalman_Filter
 import numpy as np
@@ -18,13 +19,14 @@ import numpy as np
 class KalmanFilterNode(Node):
     def __init__(self):
         super().__init__('kalman_filter_node')
-        self.subscription = self.create_subscription(Odometry, '/fsds/testing_only/odom', self.odom_callback, 10)
-        self.subscription = self.create_subscription(Imu, '/fsds/imu', self.imu_callback, 10)
-        self.ekf_odom_pub = self.create_publisher(Odometry, '/ekf_odometry',10)
+        self.subscription = self.create_subscription(PoseWithCovarianceStamped, 'pose', self.pose_callback, 10)
+        self.subscription = self.create_subscription(Odometry, 'odometry', self.odom_callback, 10)
+        self.subscription = self.create_subscription(Imu, 'imu', self.imu_callback, 10)
+        self.ekf_odom_pub = self.create_publisher(Odometry, 'ekf_odometry',10)
 
-        self.imu = np.zeros(6)
-        self.dvl = np.zeros(3)
-        self.slam = np.zeros(3)
+        self.imu = np.zeros((6,1))
+        self.dvl = np.zeros((3,1))
+        self.slam = np.zeros((6,1))
 
         self.declare_parameter('imu_update_time', 0.01)
         self.declare_parameter('dvl_update_time', 0.05)
@@ -81,28 +83,28 @@ class KalmanFilterNode(Node):
 
 
     def odom_callback(self, msg):
-        pos = msg.pose.pose.position
+        self.data.header = msg.header
         vel = msg.twist.twist.linear
-        ori = msg.pose.pose.orientation
 
         self.dvl = np.array([[vel.x],
                              [vel.y],
                              [vel.z]])
+
+    def pose_callback(self, msg):
+        pos = msg.pose.pose.position
+        ori = msg.pose.pose.orientation
+
         self.slam = np.array([[pos.x],
                               [pos.y],
                               [pos.z],
                               [ori.x],
                               [ori.y],
                               [ori.z]])
+        
 
 
     def timer_callback(self):
         filter = self.kalman_filter.ekf_principal(self.imu, self.dvl, self.slam)
-
-        # self.get_logger().info(f"ffffffffff{filter}")
-        # self.get_logger().info(f"uuuuuuuuuu{filter[0]}")
-        # self.get_logger().info(f"dddddddddd{filter[1]}")
-        # self.get_logger().info(f"jjjjjjjjjj{filter[2]}")
 
         self.data.pose.pose.position.x = float(filter[0][0])
         self.data.pose.pose.position.y = float(filter[0][1])

@@ -17,13 +17,14 @@ class EkfOdomSimNode(Node):
         queue_size = 10
         max_delay = 0.1
         
-        self.time_sync = ApproximateTimeSynchronizer([self.ekf_odom_sub, self.fsds_odom_sub], queue_size, max_delay)
+        self.time_sync = ApproximateTimeSynchronizer([self.fsds_odom_sub, self.ekf_odom_sub], queue_size, max_delay)
         self.time_sync.registerCallback(self.odom_callback)
     
 
     def odom_callback(self, fsds_odom_msg, ekf_odom_msg):
         odom = Odometry()
         odom.header = fsds_odom_msg.header
+        odom.header.frame_id = 'fsds/odom'
 
         odom.pose.pose.position.x = ekf_odom_msg.pose.pose.position.x
         odom.pose.pose.position.y = ekf_odom_msg.pose.pose.position.y
