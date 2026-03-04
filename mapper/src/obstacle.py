@@ -1,12 +1,21 @@
+import yaml
+from ament_index_python.packages import get_package_share_directory
+from pathlib import Path
+
+pkg_share = Path(get_package_share_directory("path_planning"))
+with open(pkg_share / 'config'/ 'mapper_parameters.yaml') as f:
+    data = yaml.safe_load(f)
+parameters = data["AMP"]["mapper_node"]["ros__parameters"]
+
 class Obstacle:
 
-    def __init__(self, x, y, confidence, label,deviation, count=1, id=0,time = 1e-15):
+    def __init__(self, x, y, confidence = parameters["confidence"], label = 0, deviation = parameters["deviation"], count=1, id=0,time = 1e-15):
         self.x = x
         self.y = y
-        self.confidence = 0.7
+        self.confidence = confidence
         self.label = label
         self.count = count
-        self.deviation = 0.3
+        self.deviation = deviation
         self.id = id
         self.last_observed_timestamp = time
 

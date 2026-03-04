@@ -5,9 +5,19 @@ import numpy as np
 from map import Map
 from obstacle import Obstacle
 from src.vehicle_state import VehicleState
+import yaml
+from ament_index_python.packages import get_package_share_directory
+from pathlib import Path
+
+pkg_share = Path(get_package_share_directory("path_planning"))
+with open(pkg_share / 'config'/ 'mapper_parameters.yaml') as f:
+    data = yaml.safe_load(f)
+parameters = data["AMP"]["mapper_node"]["ros__parameters"]
 
 class LuisLopesMappingMethod():
-    def __init__(self, initial_state: VehicleState, gamma = 5.99, saturation_error = 0.15, last_time_limit = 5) -> None:
+    def __init__(self, initial_state: VehicleState, gamma = parameters["gamma"],
+                  saturation_error = parameters["saturation_error"], last_time_limit = parameters["last_time_limit"]) -> None:
+        
         self.last_state = initial_state
         self.last_observations = []
         self.gamma = gamma
