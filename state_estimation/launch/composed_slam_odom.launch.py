@@ -12,19 +12,23 @@ from launch.substitutions import LaunchConfiguration as LaunchConfig
 def generate_launch_description():
 
     return LaunchDescription([
-        LaunchArg('Odom_sub', default_value=['Odom_sub'], description='Received ekf Odom message topic'),
+        LaunchArg('pose_sub', default_value=['pose_sub'], description='Received ekf Odom message topic'),
         LaunchArg('Imu_sub', default_value=['Imu_sub'], description='Received Imu message topic'),
+        LaunchArg('Ins_sub', default_value=['Ins_sub'], description='Received Ins message topic'),
         LaunchArg('Attitude_sub', default_value=['Attitude_sub'], description='Received Attitude message topic'),
         LaunchArg('odom_pub', default_value=['odom_pub'], description='Published Odom message topic'),
-
+        LaunchArg('namespace', default_value=['namespace'], description='Node namespace'),
+        
         Node(
             package='state_estimation',
-            executable='ekf_odom_node.py',
-            name='ekf_odom_node',
-            remappings=[('Odom_sub', LaunchConfig('Odom_sub')),
+            executable='composed_slam_odom_node.py',
+            name='composed_slam_odom_node',
+            remappings=[('pose_sub', LaunchConfig('pose_sub')),
                         ('Imu_sub', LaunchConfig('Imu_sub')),
+                        ('Ins_sub', LaunchConfig('Ins_sub')),
                         ('Attitude_sub', LaunchConfig('Attitude_sub')),
-                        ('odom_pub', LaunchConfig('odom_pub'))
+                        ('odom_pub', LaunchConfig('odom_pub')),
+                        ('namespace', LaunchConfig('namespace'))
                         ]
         )
     ])

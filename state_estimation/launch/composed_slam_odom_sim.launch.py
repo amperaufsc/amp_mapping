@@ -15,14 +15,16 @@ def generate_launch_description():
         LaunchArg('Ekf_odom_sub', default_value=['Ekf_odom_sub'], description='Received ekf Odom message topic'),
         LaunchArg('fsds_odom_sub', default_value=['fsds_odom_sub'], description='Received fsds Odom message topic'),
         LaunchArg('odom_pub', default_value=['odom_pub'], description='Odom published message topic'),
+        LaunchArg('name', default_value=['name'], description='Node name'),
 
         Node(
             package='state_estimation',
-            executable='ekf_odom_sim_node.py',
-            name='ekf_odom_sim_node',
+            executable='composed_slam_odom_sim_node.py',
+            name='composed_slam_odom_sim_node',
             remappings=[('Ekf_odom_sub', LaunchConfig('Ekf_odom_sub')),
                         ('fsds_odom_sub', LaunchConfig('fsds_odom_sub')),
-                        ('odom_pub', LaunchConfig('odom_pub'))
+                        ('odom_pub', LaunchConfig('odom_pub')),
+                        ('name', LaunchConfig('name'))
                         ]
         )
     ])
