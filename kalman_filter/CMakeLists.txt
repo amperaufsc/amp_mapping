@@ -26,6 +26,12 @@ install(
 )
 
 install(
+        PROGRAMS 
+        ros2/ekf_sim_node.py
+        DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
         DIRECTORY
         error_space_kalman_filter
         DESTINATION lib/${PROJECT_NAME} 

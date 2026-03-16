@@ -19,12 +19,11 @@ import numpy as np
 
 class KalmanFilterNode(Node):
     def __init__(self):
-        super().__init__('kalman_filter_node')
-        self.subscription = self.create_subscription(PoseWithCovarianceStamped, 'pose', self.pose_callback, 10)
-        self.subscription = self.create_subscription(Odometry, 'odometry', self.odom_callback, 10)
-        self.subscription = self.create_subscription(Imu, 'imu', self.imu_callback, 10)
-        self.ekf_odom_pub = self.create_publisher(Odometry, 'ekf_odometry',10)
-        self.pub_period = self.create_publisher(Float64, 'period',10)
+        super().__init__('ekf_sim_node')
+        self.subscription = self.create_subscription(Odometry, '/fsds/testing_only/odom', self.odom_callback, 10)
+        self.subscription = self.create_subscription(Imu, '/fsds/imu', self.imu_callback, 10)
+        self.ekf_odom_pub = self.create_publisher(Odometry, '/ekf_odometry',10)
+        self.pub_freq = self.create_publisher(Float64, '/freq_ekf',10)
 
         self.imu = np.zeros((6,1))
         self.dvl = np.zeros((3,1))
@@ -56,8 +55,9 @@ class KalmanFilterNode(Node):
 
         self.timer = self.create_timer(float(self.imu_update_time), self.timer_callback)
         self.data = Odometry()
-        self.timestamp = self.get_clock().now().to_msg()
+        self.freq = Float64()
         self.last_timestamp = 0
+
 
         #temos problemas com esses valores de inicialização da classe
         self.kalman_filter = Error_Space_Kalman_Filter(
@@ -87,23 +87,20 @@ class KalmanFilterNode(Node):
 
     def odom_callback(self, msg):
         self.data.header = msg.header
+        
+        pos = msg.pose.pose.position
         vel = msg.twist.twist.linear
+        ori = msg.pose.pose.orientation
 
         self.dvl = np.array([[vel.x],
                              [vel.y],
                              [vel.z]])
-
-    def pose_callback(self, msg):
-        pos = msg.pose.pose.position
-        ori = msg.pose.pose.orientation
-
         self.slam = np.array([[pos.x],
                               [pos.y],
                               [pos.z],
                               [ori.x],
                               [ori.y],
                               [ori.z]])
-        
 
 
     def timer_callback(self):
@@ -121,8 +118,10 @@ class KalmanFilterNode(Node):
 
         self.ekf_odom_pub.publish(self.data)
 
+        self.timestamp = self.get_clock().now().to_msg()
         t = self.timestamp.sec + self.timestamp.nanosec * 1e-9
-        self.pub_period.publish(t - self.last_timestamp)
+        self.freq.data = 1 / (t - self.last_timestamp)
+        self.pub_freq.publish(self.freq)
         self.last_timestamp = t
 
 
