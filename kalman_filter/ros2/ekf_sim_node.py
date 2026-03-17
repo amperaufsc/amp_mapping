@@ -20,10 +20,10 @@ import numpy as np
 class KalmanFilterNode(Node):
     def __init__(self):
         super().__init__('ekf_sim_node')
-        self.subscription = self.create_subscription(Odometry, '/fsds/testing_only/odom', self.odom_callback, 10)
-        self.subscription = self.create_subscription(Imu, '/fsds/imu', self.imu_callback, 10)
-        self.ekf_odom_pub = self.create_publisher(Odometry, '/ekf_odometry',10)
-        self.pub_freq = self.create_publisher(Float64, '/freq_ekf',10)
+        self.subscription = self.create_subscription(Odometry, 'odometry', self.odom_callback, 10)
+        self.subscription = self.create_subscription(Imu, 'imu', self.imu_callback, 10)
+        self.ekf_odom_pub = self.create_publisher(Odometry, 'ekf_odometry',10)
+        self.pub_freq = self.create_publisher(Float64, 'freq_pub',10)
 
         self.imu = np.zeros((6,1))
         self.dvl = np.zeros((3,1))
