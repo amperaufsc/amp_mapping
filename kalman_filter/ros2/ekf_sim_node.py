@@ -4,7 +4,7 @@ from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Header
 from error_space_kalman_filter.error_space_kalman_filter import Error_Space_Kalman_Filter
 import numpy as np
 
@@ -86,8 +86,6 @@ class KalmanFilterNode(Node):
 
 
     def odom_callback(self, msg):
-        self.data.header = msg.header
-        
         pos = msg.pose.pose.position
         vel = msg.twist.twist.linear
         ori = msg.pose.pose.orientation
@@ -115,6 +113,10 @@ class KalmanFilterNode(Node):
         self.data.pose.pose.orientation.x = float(filter[2][0])
         self.data.pose.pose.orientation.y = float(filter[2][1])
         self.data.pose.pose.orientation.z = float(filter[2][2])
+
+        header = Header()
+        header.stamp = self.get_clock().now().to_msg()
+        self.data.header = header
 
         self.ekf_odom_pub.publish(self.data)
 
