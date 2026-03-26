@@ -18,6 +18,7 @@ find_package(fs_msgs REQUIRED)
 install(
         PROGRAMS 
         ros2/estimation_node.py
+        ros2/wheel_rpm_odom_node.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
