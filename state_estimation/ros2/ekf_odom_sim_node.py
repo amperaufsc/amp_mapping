@@ -7,7 +7,7 @@ from nav_msgs.msg import Odometry
 
 class EkfOdomSimNode(Node):
     def __init__(self):
-        super().__init__('composed_slam_odom_node')
+        super().__init__('ekf_odom_sim_node')
 
         self.ekf_odom_sub = Subscriber(self, Odometry, 'Ekf_odom_sub')
         self.fsds_odom_sub = Subscriber(self, Odometry, 'fsds_odom_sub')
