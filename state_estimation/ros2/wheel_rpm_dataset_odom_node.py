@@ -5,7 +5,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import QuaternionStamped
 import numpy as np
 
-class WheelRpmOdom(Node):
+class WheelRpmDatasetOdom(Node):
     def __init__(self):
         super().__init__('wheel_rpm_odom')
 
@@ -36,7 +36,7 @@ class WheelRpmOdom(Node):
 
 def main(args=None):
     rclpy.init()
-    wheel_rpm_odom = WheelRpmOdom()
+    wheel_rpm_odom = WheelRpmDatasetOdom()
     rclpy.spin(wheel_rpm_odom)
     wheel_rpm_odom.destroy_node()
     rclpy.shutdown()
