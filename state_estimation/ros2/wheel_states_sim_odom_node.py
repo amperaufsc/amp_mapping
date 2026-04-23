@@ -13,24 +13,71 @@ class WheelRpmSimOdom(Node):
 
         self.odom_pub = self.create_publisher(Odometry, '/wheel_odom', 10)
 
+        self.R = 0.18      # wheel radius
+        self.L = 1.6       # wheelbase distance
+        self.x = 0.0
+        self.y = 0.0
+        self.yaw = 0.0
+
+        self.last_time = None
+
     def wheel_callback(self, msg):
+        now = self.get_clock().now()
+
+        if self.last_time is None:
+            self.last_time = now
+            return
+
+        dt = (now - self.last_time).nanoseconds * 1e-9
+        self.last_time = now
+
+        rpm_mean = (msg.fl_rpm + msg.fr_rpm + msg.rl_rpm + msg.rr_rpm) / 4.0
+        vx = rpm_mean * 2 * np.pi * self.R / 60.0
+
+        delta = (msg.fl_steering_angle + msg.fr_steering_angle) / 2.0
+        
+        wz = vx / self.L * np.tan(delta)
+        
+        vy = 0.0
+
+        self.yaw += wz * dt
+
+        self.x += vx * np.cos(self.yaw) * dt
+        self.y += vx * np.sin(self.yaw) * dt
+
         odom = Odometry()
-        rear_left_wheel = msg.rl_rpm
-        rear_right_wheel = msg.rr_rpm
-
-        mean_rpm = (rear_left_wheel + rear_right_wheel) / 2
-        vx = mean_rpm * 2 * np.pi * 0.18 / (60)
-
-        covariance_matrix = [1e-2,  0.0,   0.0,    0.0,    0.0,    0.0,
-                            0.0,    1e-2,  0.0,    0.0,    0.0,    0.0,
-                            0.0,    0.0,   1e-2,    0.0,    0.0,    0.0,
-                            0.0,    0.0,   0.0,    1e-2,    0.0,    0.0,
-                            0.0,    0.0,   0.0,    0.0,    1e-2,    0.0,
-                            0.0,    0.0,   0.0,    0.0,    0.0,    1e-2]
-
         odom.header = msg.header
+        odom.header.frame_id = "fsds/odom"
+        odom.child_frame_id = "fsds/FSCar"
+
+        odom.pose.pose.position.x = self.x
+        odom.pose.pose.position.y = self.y
+
+        #transforming yaw to quaternion
+        odom.pose.pose.orientation.z = np.sin(self.yaw / 2.0)
+        odom.pose.pose.orientation.w = np.cos(self.yaw / 2.0)
+
         odom.twist.twist.linear.x = vx
-        odom.twist.covariance = covariance_matrix
+        odom.twist.twist.linear.y = vy
+        odom.twist.twist.angular.z = wz
+
+        odom.pose.covariance = [
+            1.0,  0.0,   0.0,   0.0,   0.0,   0.0,
+            0.0,   1.0,  0.0,   0.0,   0.0,   0.0,
+            0.0,   0.0,   1e6,   0.0,   0.0,   0.0,
+            0.0,   0.0,   0.0,   1e6,   0.0,   0.0,
+            0.0,   0.0,   0.0,   0.0,   1e6,   0.0,
+            0.0,   0.0,   0.0,   0.0,   0.0,   0.1
+        ]
+
+        odom.twist.covariance = [
+            0.02,  0.0,   0.0,   0.0,   0.0,   0.0,
+            0.0,   0.1,   0.0,   0.0,   0.0,   0.0,
+            0.0,   0.0,   1e6,   0.0,   0.0,   0.0,
+            0.0,   0.0,   0.0,   1e6,   0.0,   0.0,
+            0.0,   0.0,   0.0,   0.0,   1e6,   0.0,
+            0.0,   0.0,   0.0,   0.0,   0.0,   0.5
+        ]
 
         self.odom_pub.publish(odom)
 

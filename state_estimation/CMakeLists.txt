@@ -18,8 +18,9 @@ find_package(fs_msgs REQUIRED)
 install(
         PROGRAMS 
         ros2/estimation_node.py
-        ros2/wheel_rpm_dataset_odom_node.py
+        ros2/wheel_rpm_amz_dataset_odom_node.py
         ros2/wheel_states_sim_odom_node.py
+        ros2/intermediate_gps_imu_node.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
