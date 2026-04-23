@@ -2,7 +2,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from pathlib import Path
 
-pkg_share = Path(get_package_share_directory("path_planning"))
+pkg_share = Path(get_package_share_directory("mapper"))
 with open(pkg_share / 'config'/ 'mapper_parameters.yaml') as f:
     data = yaml.safe_load(f)
 parameters = data["AMP"]["mapper_node"]["ros__parameters"]

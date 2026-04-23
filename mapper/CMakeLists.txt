@@ -21,51 +21,31 @@ find_package(lifecycle_msgs REQUIRED)
  install(
          PROGRAMS 
          ros/mapper_node.py 
+         ros/sim_track_node.py 
+         ros/odometry_message.py 
+         ros/pose_message.py
          DESTINATION lib/${PROJECT_NAME}
  )
 
- install(
-         PROGRAMS 
-         ros/sim_track_node.py 
-         DESTINATION lib/${PROJECT_NAME}
- )
- install(
-         PROGRAMS 
-         ros/odometry_message.py 
-         DESTINATION lib/${PROJECT_NAME}
- )
- install(
-        PROGRAMS
-        ros/pose_message.py
-        DESTINATION lib/${PROJECT_NAME} 
-)
- install(
-         DIRECTORY
-         src
-         DESTINATION lib/${PROJECT_NAME} 
- )
+
  install(
         PROGRAMS
         src/mapper_function.py
-        DESTINATION lib/${PROJECT_NAME}
-)
-install(
-        PROGRAMS
         src/map.py
-        DESTINATION lib/${PROJECT_NAME}
-)
-install(
-        PROGRAMS
         src/obstacle.py
-        DESTINATION lib/${PROJECT_NAME}
-)
-install(
-        PROGRAMS
         src/vehicle_state.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(
+        DIRECTORY config
+        DESTINATION share/${PROJECT_NAME}
+)
+
+install(
+        DIRECTORY launch 
+        DESTINATION share/${PROJECT_NAME})
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
