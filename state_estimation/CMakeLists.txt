@@ -24,23 +24,18 @@ install(
         DESTINATION lib/${PROJECT_NAME}
 )
 
-# install(
-#         DIRECTORY
-#         include
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
+install(
+         DIRECTORY
+         src
+         DESTINATION lib/${PROJECT_NAME} 
+)
 
-# install(
-#         DIRECTORY
-#         lateral_control
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
+install(
+        PROGRAMS 
+        src/wheel_odometry.py
+        DESTINATION lib/${PROJECT_NAME}
+)
 
-# install(
-#         DIRECTORY
-#         longitudinal_control
-#         DESTINATION lib/${PROJECT_NAME} 
-# )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
