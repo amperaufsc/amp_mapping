@@ -21,7 +21,6 @@
 #include "smacc2/smacc.hpp"
 
 // ORTHOGONALS
-#include "state_machine_as/orthogonals/or_timer.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"
 #include "state_machine_as/orthogonals/or_r2d.hpp"
 #include "state_machine_as/orthogonals/or_systemchecks.hpp"
@@ -32,9 +31,6 @@
 
 namespace state
 {
-// SMACC2 clases
-using state::OrTimer;  // This is example variable - feel free to delete it.
-
 //STATES
 struct AsOff;
 struct AsReady;

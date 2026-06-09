@@ -12,7 +12,6 @@
 
   <depend>libboost-thread-dev</depend>
 
-  <depend>ros_timer_client</depend>
   <depend>smacc2</depend>
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
