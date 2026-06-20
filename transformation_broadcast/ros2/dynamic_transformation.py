@@ -10,7 +10,7 @@ import time
 class DynamicBroadcaster(Node):
     def __init__(self):
         super().__init__('dynamic_broadcaster')
-        self.name_ = "fsds/FSCar"
+        self.name_ = "base_link"
         
         # Publisher para o tópico customizado (não mais /tf direto)
         self.tf_publisher_ = self.create_publisher(
@@ -33,7 +33,7 @@ class DynamicBroadcaster(Node):
         # Cria a mensagem de transformação
         tfs = TransformStamped()
         tfs.header.stamp = msg.header.stamp
-        tfs.header.frame_id = "fsds/odom"
+        tfs.header.frame_id = "odom"
         tfs.child_frame_id = self.name_
 
         # Preenche os dados de posição e orientação

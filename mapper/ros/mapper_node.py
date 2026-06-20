@@ -66,10 +66,6 @@ class MapperNode(Node):
 
                 self.map=self.mapper.update_map(self.obstacle_numpy_array,self.state,self.map)
                 
-                '''for obstacle in self.map.map:
-
-                    self.get_logger().info(f"Cone: {obstacle.x, obstacle.y}")'''
-
                 track = self.map_to_track(self.map.map)
                 self.track_pub.publish(track)
             else:
