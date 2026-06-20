@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(mapper)
+project(kalman_filter)
 
 # Default to C++14 if no standard is specified
 if(NOT CMAKE_CXX_STANDARD)
@@ -7,44 +7,42 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 # find dependencies
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(fs_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
-
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
- install(
-         PROGRAMS 
-         ros/mapper_node.py 
-         ros/sim_track_node.py 
-         ros/odometry_message.py 
-         ros/pose_message.py
-         DESTINATION lib/${PROJECT_NAME}
- )
 
-
- install(
-        PROGRAMS
-        src/mapper_function.py
-        src/map.py
-        src/obstacle.py
-        src/vehicle_state.py
+install(
+        PROGRAMS 
+        ros2/kalman_filter_node.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-        DIRECTORY config
+        DIRECTORY
+        error_space_kalman_filter
+        DESTINATION lib/${PROJECT_NAME} 
+)
+
+install(
+        DIRECTORY 
+        launch
         DESTINATION share/${PROJECT_NAME}
 )
 
 install(
-        DIRECTORY launch 
-        DESTINATION share/${PROJECT_NAME})
+        DIRECTORY
+        config
+        DESTINATION share/${PROJECT_NAME}
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -28,7 +28,6 @@ class SimTrackNode(Node):
         self.raio = 30
         queue_size = 10
         max_delay = 1
-        self.get_logger().warning("construi")
         self.time_gap = 0.03
   
 
@@ -66,8 +65,6 @@ class SimTrackNode(Node):
     
     def track_callback(self,msg):
         self.track = msg
-        if self.track:
-            self.get_logger().info("ALVIN E OS esQUILOS")
     
     def apply_error_on_track(self,track):
         for cone in track.track:

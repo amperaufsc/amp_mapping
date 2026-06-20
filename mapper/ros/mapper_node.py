@@ -28,35 +28,30 @@ class MapperNode(Node):
         self.odom_sub = Subscriber(self,Odometry,"odom")
         self.tf_listener = TransformListener(self._tf_buffer,self)
         self.track_pub = self.create_publisher(Track, 'track_pub',10)
-        
+        self.target_frame = "fsds/map"
+        self.source_frame = "fsds/FSCar"
+
         self.track_received = False
-        self.first_pose=True
-        self.first_track=True
-        self.transform_received=False
+        self.first_pose = True
+        self.first_track = True
+        self.transform_received = False
         queue_size = 10
         max_delay = 1
-        self.time_gap = 1
-        self.get_logger().warning("construi")
-        
+        self.time_gap = 1       
         
         
         self.time_sync = ApproximateTimeSynchronizer([self.track_sub,self.odom_sub],queue_size,max_delay)
         self.time_sync.registerCallback(self.sync_callback)
-        
 
 
     def sync_callback(self,track,odom):
-        self.get_logger().warning("entrei no callbackk")
         
         tempo = 0
         
         if tempo < self.time_gap:
-            self.get_logger().warning("tempo ta bom")
             
             
             if self.transform_received:
-                self.get_logger().warning("transformei")
-                
                 rotate_track =self.rotate_track(track,self.trans)
 
                 track=self.array_to_track(rotate_track,track)
@@ -76,13 +71,13 @@ class MapperNode(Node):
             else:
 
                 try:
-                    self.trans=self._tf_buffer.lookup_transform("base_link","oak_left_camera_optical_frame",rclpy.time.Time())
+                    self.trans=self._tf_buffer.lookup_transform(self.target_frame, self.source_frame, rclpy.time.Time()) #Use for simulation in FSDS
                     self.get_logger().info(self.trans.child_frame_id)
-                    self.get_logger().warning("Deu bom")
+                    self.get_logger().warning("Transform received")
                     self.transform_received = True
 
                 except:
-                    self.get_logger().warning("Deu merda")
+                    self.get_logger().warning("Transform not received")
                 
                     
             
@@ -107,14 +102,8 @@ class MapperNode(Node):
         track_array=self.track_to_array(track.track)
         points = track_array
 
-        
-
-        
         points_transformed =np.array([[T @ point.T] for point in points])
         
-        
-        
-    
         rotated_track = points_transformed.astype(np.float32)
         
         return rotated_track
