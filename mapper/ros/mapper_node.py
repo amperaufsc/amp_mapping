@@ -149,14 +149,17 @@ class MapperNode(Node):
         for cone in track.track:
             x = cone.location.x 
             y = cone.location.y 
-            if cone.color == 0:
-                color = 0
-            elif cone.color == 1 or cone.color == 4:
-                color = 4
             confidence = 0.7
             deviation = 0.3
-            obstacle = Obstacle(x,y,confidence,color,deviation)
-            self.obstacle_numpy_array.append(obstacle)
+            if cone.color == 0:
+                color = 0
+                obstacle = Obstacle(x,y,confidence,color,deviation)
+                self.obstacle_numpy_array.append(obstacle)
+            elif cone.color == 1:
+                color = 4
+                obstacle = Obstacle(x,y,confidence,color,deviation)
+                self.obstacle_numpy_array.append(obstacle)
+            
         if self.first_track:
             self.map=Map(self.obstacle_numpy_array)
             self.first_track=False
@@ -194,6 +197,8 @@ class MapperNode(Node):
             else:
                 cone.color = 2
             track.track.append(cone)
+        track.track = track.track[1:]
+        
         return track
             
             
