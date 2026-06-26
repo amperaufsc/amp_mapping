@@ -7,7 +7,6 @@ endif()
 
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -16,7 +15,6 @@ find_package(rclcpp REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 
 
-ament_python_install_package(src)
 
 
 install(
@@ -25,7 +23,17 @@ install(
     ros/sim_track_node.py
     ros/odometry_message.py
     ros/pose_message.py
+    ros/mapper_node_life.py
   DESTINATION lib/${PROJECT_NAME}
+)
+
+ install(
+        PROGRAMS
+        src/mapper_function.py
+        src/map.py
+        src/obstacle.py
+        src/vehicle_state.py
+        DESTINATION lib/${PROJECT_NAME}
 )
 
 install(

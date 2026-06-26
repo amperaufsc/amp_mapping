@@ -24,7 +24,7 @@ from tf2_ros import LookupTransform
 class MapperNode(LifecycleNode):
 
     def __init__(self):
-        super().__init__('mapper_node')
+        super().__init__('mapper_node_life')
 
         #Reservando espaço pra usar depois
         self.get_logger().info('Mapper Unconfigured. (o_o)')
@@ -50,8 +50,10 @@ class MapperNode(LifecycleNode):
 
         try:
             self._tf_buffer = Buffer()
-            self.track_sub = Subscriber(self, TrackStampedWithCovariance, "track")
-            self.odom_sub = Subscriber(self, Odometry, "odom")
+            self.track_sub = Subscriber(self, TrackStampedWithCovariance, "/fsds/testing_only/track")
+            # Normal odom
+            #self.odom_sub = Subscriber(self, Odometry, "odom")
+            self.odom_sub = Subscriber(self, Odometry, "/fsds/testing_only/odom")
             self.tf_listener = TransformListener(self._tf_buffer, self)
             self.track_pub = self.create_lifecycle_publisher(Track, 'track_pub', 10)
 
