@@ -10,23 +10,30 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 
+
 def generate_launch_description():
+
 
     parameters_file = os.path.join(
         get_package_share_directory('control'),
         'config',
-        'control_parameters.yaml'
+        'mapper_parameters.yaml'
     )
 
     return LaunchDescription([
-        LaunchArg('odom_pub',default_value=['orbslam/odom'],description='odometry msg publisher'),
-        LaunchArg('pose_sub',default_value=['/orbslam3/orbslam/pose'],description='pose msg subscriber'),
+        LaunchArg('namespace',default_value=['namespace'],description='namespace for Node'),
+        LaunchArg('track',default_value=['track'],description='detected track'),
+        LaunchArg('odom',default_value=['odom'],description='odometri msg'),
+        LaunchArg('track_pub',default_value=['track_pub'],description='track msg after Luiz Lopez'),
         Node(
             package='mapper',
-            executable='odometry_message.py',
-            name='odometry_slam',
-            remappings=[('odom_pub',LaunchConfiguration('odom_pub')),
-                        ('pose_sub',LaunchConfiguration('pose_sub'))],
+            executable='mapper_node.py',
+            name='mapper_node',
+            namespace=LaunchConfiguration('namespace'),
+            remappings=[
+                ('track', LaunchConfiguration('track')),
+                ('odom', LaunchConfiguration('odom')), 
+                ('track_pub', LaunchConfiguration('track_pub'))],
             parameters=[parameters_file],
         )
     ])

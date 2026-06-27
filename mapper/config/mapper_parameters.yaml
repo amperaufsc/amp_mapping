@@ -1,0 +1,10 @@
+AMP:                # nome do namespace  
+  mapper_node:     
+    ros__parameters:
+
+      gamma : 5.99
+      saturation_error: 0.15
+      last_time_limit: 5     
+
+      confidence: 0.7
+      deviation: 0.3

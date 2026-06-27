@@ -19,16 +19,15 @@ class SimTrackNode(Node):
         super().__init__('sim_mapper_node')
         self.track = TrackStampedWithCovariance()
         self._tf_buffer=Buffer()
-        self.subscription = self.create_subscription(Odometry, '/fsds/testing_only/odom', self.odom_callback, 10)
-        self.subscription = self.create_subscription(Track, '/fsds/testing_only/track', self.track_callback, 10)
+        self.subscription = self.create_subscription(Odometry, 'odom', self.odom_callback, 10)
+        self.subscription = self.create_subscription(Track, 'track', self.track_callback, 10)
         self.tf_listener = TransformListener(self._tf_buffer,self)
-        self.track_pub = self.create_publisher(TrackStampedWithCovariance, '/sim_mapper/track',10)
+        self.track_pub = self.create_publisher(TrackStampedWithCovariance, 'track_pub',10)
         self.declare_parameter("apply_error",False)
         self.apply_error = self.get_parameter("apply_error").value
         self.raio = 30
         queue_size = 10
         max_delay = 1
-        self.get_logger().warning("construi")
         self.time_gap = 0.03
   
 
@@ -66,8 +65,6 @@ class SimTrackNode(Node):
     
     def track_callback(self,msg):
         self.track = msg
-        if self.track:
-            self.get_logger().info("ALVIN E OS esQUILOS")
     
     def apply_error_on_track(self,track):
         for cone in track.track:
