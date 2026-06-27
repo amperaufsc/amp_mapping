@@ -23,35 +23,23 @@ def generate_launch_description():
         ],
     )
 
-    static_tf = ExecuteProcess(
-        cmd=[
-            '/opt/ros/humble/lib/tf2_ros/static_transform_publisher',
-            '--yaw', '-1.570796327',
-            '--roll', '-1.570796327',
-            '--pitch', '0',
-            '--frame-id', 'left_camera_link',
-            '--child-frame-id', 'oak_left_camera_optical_frame',
-        ],
-        output='screen',
-    )
-
     return LaunchDescription([
 
         LaunchArg(
             'namespace',
-            default_value='',
+            default_value='mapper',
             description='Namespace for node'
         ),
 
         LaunchArg(
             'track',
-            default_value='track',
+            default_value='/perception/track',
             description='Detected track topic'
         ),
 
         LaunchArg(
             'odom',
-            default_value='/fsds/testing_only/odom',
+            default_value='/orbslam3/odom',
             description='Odometry topic'
         ),
 
@@ -61,7 +49,5 @@ def generate_launch_description():
             description='Published track topic'
         ),
 
-        static_tf,
-
-        mapper_node,
+        mapper_node
     ])
