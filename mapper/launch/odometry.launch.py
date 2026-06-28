@@ -19,7 +19,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        LaunchArg('odom_pub',default_value=['orbslam/odom'],description='odometry msg publisher'),
+        LaunchArg('odom_pub',default_value=['/orbslam/odom'],description='odometry msg publisher'),
         LaunchArg('pose_sub',default_value=['/orbslam3/orbslam/pose'],description='pose msg subscriber'),
         Node(
             package='mapper',
