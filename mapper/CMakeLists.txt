@@ -37,6 +37,11 @@ install(
 )
 
 install(
+  DIRECTORY src
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
   DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
