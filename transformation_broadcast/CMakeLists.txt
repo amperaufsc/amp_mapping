@@ -9,6 +9,7 @@ find_package(rclpy REQUIRED)
 install(
   PROGRAMS
     ros2/dynamic_transformation.py
+    ros2/orbslam_tf_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
