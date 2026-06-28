@@ -17,10 +17,10 @@ class SimTrackNode(Node):
 
     def __init__(self):
         super().__init__('sim_mapper_node')
-        self.track = TrackStampedWithCovariance()
+        self.track = Track()
         self._tf_buffer=Buffer()
-        self.subscription = self.create_subscription(Odometry, 'odom', self.odom_callback, 10)
-        self.subscription = self.create_subscription(Track, 'track', self.track_callback, 10)
+        self.odom_sub = self.create_subscription(Odometry, 'odom', self.odom_callback, 10)
+        self.track_sub = self.create_subscription(Track, 'track', self.track_callback, 10)
         self.tf_listener = TransformListener(self._tf_buffer,self)
         self.track_pub = self.create_publisher(TrackStampedWithCovariance, 'track_pub',10)
         self.declare_parameter("apply_error",False)
