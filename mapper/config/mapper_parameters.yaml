@@ -7,4 +7,4 @@ AMP:                # nome do namespace
       last_time_limit: 5     
 
       confidence: 0.7
-      deviation: 0.3
+      deviation: 0.4
