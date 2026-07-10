@@ -1,0 +1,17 @@
+<package format="3">
+  <name>transformation_broadcast</name>
+  <version>0.0.0</version>
+  <description>TF broadcaster via odometria</description>
+  <maintainer email="voce@email.com">Seu Nome</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Somente exec_depend para Python -->
+  <exec_depend>rclpy</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+

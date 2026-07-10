@@ -4,9 +4,6 @@
 #include "smacc2/smacc.hpp"
 
 // CLIENTS
-#include "ros_timer_client/cl_ros_timer.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_loop.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_once.hpp"
 #include <std_msgs/msg/bool.hpp>
 #include "smacc2/client_behaviors/cb_wait_topic_message.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"

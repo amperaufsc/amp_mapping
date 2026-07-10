@@ -4,14 +4,12 @@
 #include "smacc2/smacc.hpp"
 
 // CLIENTS
-#include "ros_timer_client/cl_ros_timer.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_loop.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_once.hpp"
+#include "lifecycle_msgs/msg/transition_event.hpp"
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/string.hpp>
 #include "smacc2/client_behaviors/cb_wait_topic_message.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"
 #include "state_machine_as/orthogonals/or_not_ebs.hpp"
-#include <std_msgs/msg/string.hpp>
 
 namespace state
 {
@@ -32,7 +30,9 @@ struct AsEmergency : smacc2::SmaccState<AsEmergency, State>
   // TRANSITION TABLE
   typedef boost::mpl::list<
     Transition<
-      smacc2::EvCbSuccess<smacc2::client_behaviors::CbWaitTopicMessage<std_msgs::msg::Bool>, OrNOTEbs>,
+      smacc2::EvCbSuccess<
+        smacc2::client_behaviors::CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>,
+        OrNOTEbs>,
       AsOff,
       SUCCESS
     >
@@ -41,7 +41,8 @@ struct AsEmergency : smacc2::SmaccState<AsEmergency, State>
   // STATE FUNCTIONS
   static void staticConfigure()
   {
-    configure_orthogonal<OrNOTEbs, CbWaitTopicMessage<std_msgs::msg::Bool>>("NOT_Ebs");
+    configure_orthogonal<OrNOTEbs, CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>>(
+      "NOT_Ebs");
   }
 
   void runtimeConfigure() {}
@@ -49,12 +50,21 @@ struct AsEmergency : smacc2::SmaccState<AsEmergency, State>
   void onEntry()
   {
     RCLCPP_WARN(getLogger(), "ON AS_EMERGENCY");
-    if (!state_pub_){
-      state_pub_ = getNode()->create_publisher<std_msgs::msg::String>("/AMP/as_status_indicator",10);
+    if (!state_pub_) {
+      state_pub_ = getNode()->create_publisher<std_msgs::msg::String>("/AMP/as_status_indicator", 10);
     }
+
     std_msgs::msg::String msg;
     msg.data = "as_emergency";
     state_pub_->publish(msg);
+
+    if (!as_emergency_pub_) {
+      as_emergency_pub_ = getNode()->create_publisher<std_msgs::msg::Bool>("/AMP/as_emergency", 10);
+    }
+
+    std_msgs::msg::Bool emergency_msg;
+    emergency_msg.data = true;
+    as_emergency_pub_->publish(emergency_msg);
   }
   void onExit()
   {
@@ -63,5 +73,6 @@ struct AsEmergency : smacc2::SmaccState<AsEmergency, State>
     RCLCPP_INFO(getLogger(), (output_message_note + " On Exit!").c_str());
   }
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr state_pub_;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr as_emergency_pub_;
 };
 }

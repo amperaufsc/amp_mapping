@@ -19,17 +19,11 @@
 #include "smacc2/smacc.hpp"
 
 // CLIENTS
-#include "ros_timer_client/cl_ros_timer.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_loop.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_once.hpp"
 #include <std_msgs/msg/bool.hpp>
 #include "smacc2/client_behaviors/cb_wait_topic_message.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"
 #include "state_machine_as/orthogonals/or_systemchecks.hpp"
 #include "lifecycle_msgs/msg/transition_event.hpp"
-
-// ORTHOGONALS
-using state::OrTimer;  // This is an example variable - feel free to delete it.
 
 namespace state
 {
@@ -38,13 +32,6 @@ using smacc2::Transition;
 using smacc2::EvStateRequestFinish;
 using smacc2::default_transition_tags::SUCCESS;
 using smacc2::client_behaviors::CbWaitTopicMessage;
-using smacc2::EvTopicMessage;
-
-using cl_ros_timer::EvTimer;
-using cl_ros_timer::CbTimerCountdownLoop;
-using cl_ros_timer::CbTimerCountdownOnce;
-
-using state::OrTimer;
 using state::OrSystemChecks;
 
 // STATE DECLARATION
@@ -64,10 +51,8 @@ struct AsOff : smacc2::SmaccState<AsOff, State>
   // STATE FUNCTIONS
   static void staticConfigure()
   {
-    // START: Example code - change needed
-    //configure_orthogonal<OrTimer, CbTimerCountdownLoop>(3);  // EvTimer triggers each 3 client ticks
-    configure_orthogonal<OrSystemChecks, CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>>("EvSystemChecksOK");  // EvTimer triggers once at 10 client ticks
-    // END: Example code - change or delete as needed
+    configure_orthogonal<OrSystemChecks, CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>>(
+      "EvSystemChecksOK");
   }
 
   void runtimeConfigure() {}

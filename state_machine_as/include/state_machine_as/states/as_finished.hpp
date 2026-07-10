@@ -4,10 +4,7 @@
 #include "smacc2/smacc.hpp"
 
 // CLIENTS
-#include "ros_timer_client/cl_ros_timer.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_loop.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_once.hpp"
-#include <std_msgs/msg/bool.hpp>
+#include "lifecycle_msgs/msg/transition_event.hpp"
 #include "smacc2/client_behaviors/cb_wait_topic_message.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"
 #include "state_machine_as/orthogonals/or_not_ebs.hpp"
@@ -31,7 +28,9 @@ struct AsFinished : smacc2::SmaccState<AsFinished, State>
   // TRANSITION TABLE
   typedef boost::mpl::list<
     Transition<
-      smacc2::EvCbSuccess<smacc2::client_behaviors::CbWaitTopicMessage<std_msgs::msg::Bool>, OrNOTEbs>,
+      smacc2::EvCbSuccess<
+        smacc2::client_behaviors::CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>,
+        OrNOTEbs>,
       AsOff,
       SUCCESS
     >
@@ -40,7 +39,8 @@ struct AsFinished : smacc2::SmaccState<AsFinished, State>
   // STATE FUNCTIONS
   static void staticConfigure()
   {
-    configure_orthogonal<OrNOTEbs, CbWaitTopicMessage<std_msgs::msg::Bool>>("NOT_Ebs");
+    configure_orthogonal<OrNOTEbs, CbWaitTopicMessage<lifecycle_msgs::msg::TransitionEvent>>(
+      "NOT_Ebs");
   }
 
   void runtimeConfigure() {}

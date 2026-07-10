@@ -111,7 +111,7 @@ class LuisLopesMappingMethod():
                 self.waiting_list.append(observation)
             else:
                 batch.append(filtered_wait[0])
-        return observations
+        return batch
     
     def calculate_obstacles_in_global_frame(self, state:VehicleState, observations:List[Obstacle]):
         observations_in_global_frame = list()

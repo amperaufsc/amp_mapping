@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(state_estimation)
+project(kalman_filter)
 
 # Default to C++14 if no standard is specified
 if(NOT CMAKE_CXX_STANDARD)
@@ -7,45 +7,42 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 # find dependencies
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(fs_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-
-add_executable(vectornav_pose_node ros2/vectornav_pose_node.cpp)
-
-ament_target_dependencies(
-  vectornav_pose_node
-  rclcpp
-  geometry_msgs
-)
-
+find_package(lifecycle_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-install(
-        PROGRAMS 
-        ros2/estimation_node.py
-        DESTINATION lib/${PROJECT_NAME}
-)
 
 install(
         PROGRAMS 
-        ros2/vectornav_msgs_node.py
+        ros2/kalman_filter_node.py
         DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-        TARGETS
-        vectornav_pose_node
-        DESTINATION lib/${PROJECT_NAME}
+        DIRECTORY
+        error_space_kalman_filter
+        DESTINATION lib/${PROJECT_NAME} 
 )
 
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(
+        DIRECTORY 
+        launch
+        DESTINATION share/${PROJECT_NAME}
+)
+
+install(
+        DIRECTORY
+        config
+        DESTINATION share/${PROJECT_NAME}
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

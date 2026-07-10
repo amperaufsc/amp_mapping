@@ -28,15 +28,15 @@ class MapperNode(Node):
         self.odom_sub = Subscriber(self,Odometry,"odom")
         self.tf_listener = TransformListener(self._tf_buffer,self)
         self.track_pub = self.create_publisher(Track, 'track_pub',10)
-        self.target_frame = "fsds/map"
-        self.source_frame = "fsds/FSCar"
+        self.target_frame = "left_camera_link"
+        self.source_frame = "oak_left_camera_optical_frame"
 
         self.track_received = False
         self.first_pose = True
         self.first_track = True
         self.transform_received = False
         queue_size = 10
-        max_delay = 1
+        max_delay = 0.1
         self.time_gap = 1       
         
         
@@ -154,7 +154,7 @@ class MapperNode(Node):
             elif cone.color == 1 or cone.color == 4:
                 color = 4
             confidence = 0.7
-            deviation = 0.3
+            deviation = 0.4
             obstacle = Obstacle(x,y,confidence,color,deviation)
             self.obstacle_numpy_array.append(obstacle)
         if self.first_track:

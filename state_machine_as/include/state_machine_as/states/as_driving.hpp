@@ -4,15 +4,13 @@
 #include "smacc2/smacc.hpp"
 
 // CLIENTS
-#include "ros_timer_client/cl_ros_timer.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_loop.hpp"
-#include "ros_timer_client/client_behaviors/cb_timer_countdown_once.hpp"
 #include <std_msgs/msg/bool.hpp>
 #include "smacc2/client_behaviors/cb_wait_topic_message.hpp"
 #include "state_machine_as/orthogonals/or_notsystemchecks.hpp"
 #include "state_machine_as/orthogonals/or_r2d.hpp"
 #include "state_machine_as/orthogonals/or_ebs_missioncomplete.hpp"
-#include "state_machine_as/orthogonals/or_not_ebs.hpp" // so declarando aqui pra funcionar (tinha q ser "criado" antes)
+#include "state_machine_as/orthogonals/or_ebs_notmissioncomplete.hpp"
+#include "state_machine_as/orthogonals/or_not_ebs.hpp"
 #include "lifecycle_msgs/msg/transition_event.hpp"
 
 namespace state
@@ -62,6 +60,14 @@ struct AsDriving : smacc2::SmaccState<AsDriving, State>
   void onEntry()
   {
     RCLCPP_WARN(getLogger(), "ON AS_DRIVING");
+
+    if (!as_driving_pub_) {
+      as_driving_pub_ = getNode()->create_publisher<std_msgs::msg::Bool>("/AMP/as_driving", 10);
+    }
+
+    std_msgs::msg::Bool msg;
+    msg.data = true;
+    as_driving_pub_->publish(msg);
   }
 
   void onExit()
@@ -70,5 +76,7 @@ struct AsDriving : smacc2::SmaccState<AsDriving, State>
     getGlobalSMData("output_message_note", output_message_note);
     RCLCPP_INFO(getLogger(), (output_message_note + " On Exit!").c_str());
   }
+
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr as_driving_pub_;
 };
 }

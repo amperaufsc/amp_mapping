@@ -78,7 +78,7 @@ If it is not possible to transition to the desired state from the current state,
 
 ### For compiling individualy, use: 
 ```bash
-    colcon build --packages-select ros2_mapper
+    colcon build --packages-select mapper
    ```
 
 

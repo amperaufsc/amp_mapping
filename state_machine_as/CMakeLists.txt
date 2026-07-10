@@ -13,16 +13,16 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(ros_timer_client REQUIRED)
 find_package(smacc2 REQUIRED)
 find_package(Boost COMPONENTS thread REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  ros_timer_client
   smacc2
   lifecycle_msgs
   rclcpp
+  std_msgs
 )
 
 include_directories(
@@ -41,7 +41,6 @@ add_executable(publisher_tester2
 
 target_link_libraries(state_node
   ${smacc2_LIBRARIES}
-  ${ros_timer_client_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
