@@ -38,7 +38,7 @@ class MapperNode(LifecycleNode):
         self.declare_parameter('target_frame', 'left_camera_link')
         self.declare_parameter('source_frame', 'oak_left_camera_optical_frame')
         self.declare_parameter('queue_size', 10)
-        self.declare_parameter('max_    delay', 0.1)
+        self.declare_parameter('max_delay', 0.1)
         self.declare_parameter('time_gap', 1)
 
 
