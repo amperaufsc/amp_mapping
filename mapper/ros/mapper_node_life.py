@@ -35,10 +35,10 @@ class MapperNode(LifecycleNode):
         self.time_sync = None
         self.track_pub = None
 
-        self.declare_parameter('target_frame', 'fsds/map')
-        self.declare_parameter('source_frame', 'fsds/FSCar')
+        self.declare_parameter('target_frame', 'left_camera_link')
+        self.declare_parameter('source_frame', 'oak_left_camera_optical_frame')
         self.declare_parameter('queue_size', 10)
-        self.declare_parameter('max_delay', 1.0)
+        self.declare_parameter('max_    delay', 0.1)
         self.declare_parameter('time_gap', 1)
 
 
@@ -259,7 +259,7 @@ class MapperNode(LifecycleNode):
             elif cone.color == 1 or cone.color == 4:
                 color = 4
             confidence = 0.7
-            deviation = 0.3
+            deviation = 0.4
             obstacle = Obstacle(x,y,confidence,color,deviation)
             self.obstacle_numpy_array.append(obstacle)
         if self.first_track:

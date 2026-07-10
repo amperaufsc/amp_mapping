@@ -10,8 +10,9 @@ from launch_ros.actions import LifecycleNode, Node
 def generate_launch_description():
 
     return LaunchDescription([
-        LaunchArg('odom_pub',default_value=['/orbslam/odom'],description='odometry msg publisher'),
-        LaunchArg('pose_sub',default_value=['/orbslam3/orbslam/pose'],description='pose msg subscriber'),
+        LaunchArg('namespace',default_value=['namespace'],description='namespace for Node'),
+        LaunchArg('odom',default_value=['odom'],description='odometry msg publisher'),
+        LaunchArg('track',default_value=['track'],description='pose msg subscriber'),
         LaunchArg('track_pub',default_value=['track_pub'],description='pose msg subscriber'),
 
 
